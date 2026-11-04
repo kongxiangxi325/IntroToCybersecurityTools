@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大学生网络安全常识</title>
+<style>
+  :root {
+    --blue: #2f6fed;
+    --blue-deep: #1c4bd0;
+    --teal: #14b8a6;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-2: #263348;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --line: rgba(47, 111, 237, 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(47,111,237,.14), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(20,184,166,.12), transparent 45%),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  header {
+    text-align: center;
+    padding: 56px 20px 36px;
+  }
+  header .badge {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--teal);
+    border: 1px solid rgba(20,184,166,.4);
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    background: linear-gradient(90deg, #60a5fa, #2dd4bf);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
+  }
+  header .sub { color: var(--muted); margin-top: 14px; font-size: 16px; }
+  .divider {
+    width: 160px; height: 2px;
+    margin: 22px auto 0;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  }
+
+  .section-title {
+    display: flex; align-items: center; gap: 12px;
+    margin: 48px 0 22px;
+  }
+  .section-title .num {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--blue-deep), var(--teal));
+    font-weight: 800; font-size: 18px; color: #0f172a; flex-shrink: 0;
+  }
+  .section-title h2 { font-size: 24px; letter-spacing: 1px; }
+  .section-title .hint { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  .grid { display: grid; gap: 18px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--blue); }
+  .card .icon { font-size: 32px; margin-bottom: 12px; }
+  .card h3 { font-size: 18px; margin-bottom: 10px; color: #60a5fa; }
+  .card p, .card li { color: var(--muted); font-size: 14.5px; }
+
+  ul { list-style: none; }
+  ul li { padding-left: 24px; position: relative; margin-bottom: 8px; }
+  ul li::before {
+    content: "▸"; position: absolute; left: 0;
+    color: var(--teal); font-size: 13px; top: 1px;
+  }
+
+  .tip-box {
+    background: linear-gradient(160deg, var(--card-2), var(--card));
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--amber);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .tip-box.warn { border-left-color: var(--red); }
+  .tip-box h4 { color: var(--amber); margin-bottom: 8px; font-size: 16px; }
+  .tip-box.warn h4 { color: #f87171; }
+  .tip-box p { color: var(--muted); font-size: 14.5px; }
+
+  /* 密码强度演示 */
+  .pwd-demo {
+    background: linear-gradient(160deg, var(--card-2), var(--card));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px;
+  }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 14px; color: #60a5fa; margin-bottom: 8px; font-weight: 600; }
+  .field input {
+    width: 100%; padding: 12px 16px;
+    border-radius: 10px; border: 1px solid var(--line);
+    background: #0f172a; color: var(--text); font-size: 15px;
+    outline: none;
+  }
+  .field input:focus { border-color: var(--blue); }
+  .strength-meter { display: flex; gap: 6px; margin-top: 10px; }
+  .strength-meter span { flex: 1; height: 8px; border-radius: 4px; background: #334155; transition: background .2s; }
+  .strength-text { margin-top: 10px; font-size: 14px; color: var(--muted); }
+  .strength-text b { font-weight: 700; }
+
+  footer {
+    text-align: center; margin-top: 60px;
+    color: var(--muted); font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .section-title .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">CYBER SECURITY 101</div>
+    <h1>大学生网络安全常识</h1>
+    <p class="sub">密码安全 · 识别钓鱼消息 · 个人信息保护</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- ============ 一、密码安全 ============ -->
+  <div class="section-title">
+    <div class="num">1</div>
+    <h2>密码安全</h2>
+    <span class="hint">好习惯是安全的第一道防线</span>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="icon">🔑</div>
+      <h3>设置强密码</h3>
+      <ul>
+        <li>至少 12 位，越长越安全</li>
+        <li>混合大小写字母、数字、符号</li>
+        <li>避免生日、学号、姓名拼音</li>
+        <li>不用「123456」「password」</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🔁</div>
+      <h3>一账号一密码</h3>
+      <ul>
+        <li>不同平台使用不同密码</li>
+        <li>防止一处泄露、处处被盗</li>
+        <li>可用密码管理器统一保存</li>
+        <li>定期更换重要账号密码</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🛡️</div>
+      <h3>开启双重认证</h3>
+      <ul>
+        <li>绑定手机或验证器 App</li>
+        <li>重要账号开启 2FA</li>
+        <li>警惕索要验证码的陌生人</li>
+        <li>验证码绝不透露给他人</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-box warn">
+    <h4>⚠️ 常见坏习惯</h4>
+    <p>所有账号共用同一个密码、把密码写在便利贴或记事本里、在公共 Wi-Fi 下登录网银或输入密码。这些行为会让你的账号面临极高的被盗风险。</p>
+  </div>
+
+  <!-- 密码强度演示 -->
+  <div class="pwd-demo">
+    <div class="field">
+      <label>试试输入一个密码，看看它的强度（仅本地演示，不会上传）</label>
+      <input type="text" id="pwdInput" placeholder="输入密码测试强度…" oninput="checkStrength()">
+    </div>
+    <div class="strength-meter">
+      <span id="s1"></span><span id="s2"></span><span id="s3"></span><span id="s4"></span>
+    </div>
+    <div class="strength-text" id="strengthText">输入密码后即可看到强度评估。</div>
+  </div>
+
+  <!-- ============ 二、识别钓鱼消息 ============ -->
+  <div class="section-title">
+    <div class="num">2</div>
+    <h2>识别钓鱼消息</h2>
+    <span class="hint">别让好奇心变成陷阱</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">🎣</div>
+      <h3>钓鱼的常见特征</h3>
+      <ul>
+        <li>伪造官方发件人，语气紧急</li>
+        <li>链接域名与官方不符（多一个字母）</li>
+        <li>索要账号、密码、验证码</li>
+        <li>以「中奖」「退款」为诱饵</li>
+        <li>附件后缀可疑（.exe、.js）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">✅</div>
+      <h3>正确的应对方式</h3>
+      <ul>
+        <li>不点陌生链接，不下载来路不明附件</li>
+        <li>核对发件地址与官方域名</li>
+        <li>涉及钱财先通过官方渠道核实</li>
+        <li>怀疑时直接登录官网确认</li>
+        <li>及时举报可疑消息</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <h4>💡 一句话口诀</h4>
+    <p>「链接不点、账号不交、验证码不说、转账先核实。」看到要求你「马上点击」「限时领取」的消息，先停一停，多半是陷阱。</p>
+  </div>
+
+  <!-- ============ 三、个人信息保护 ============ -->
+  <div class="section-title">
+    <div class="num">3</div>
+    <h2>个人信息保护</h2>
+    <span class="hint">你的数据，值得被认真对待</span>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="icon">📱</div>
+      <h3>谨慎授权</h3>
+      <ul>
+        <li>不轻易开放通讯录、定位权限</li>
+        <li>用不到的 App 权限及时关闭</li>
+        <li>警惕「免费」背后的数据收集</li>
+        <li>安装 App 认准官方应用商店</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🌐</div>
+      <h3>社媒留痕</h3>
+      <ul>
+        <li>不晒证件、车票、定位</li>
+        <li>朋友圈注意隐藏敏感信息</li>
+        <li>定期清理历史动态与授权</li>
+        <li>求职简历谨慎处理个人隐私</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🗑️</div>
+      <h3>妥善处置</h3>
+      <ul>
+        <li>旧设备出售前彻底擦除数据</li>
+        <li>快递单、文件销毁敏感信息</li>
+        <li>公共电脑用完记得退出登录</li>
+        <li>重要账号定期检查登录设备</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-box warn">
+    <h4>🚨 遭遇信息泄露怎么办</h4>
+    <p>第一时间修改相关账号密码、开启双重认证、解绑关联的支付方式，并向平台或公安机关举报。不要因为害怕而拖延处理。</p>
+  </div>
+
+  <footer>
+    <p>网络安全无小事，养成好习惯，从今天开始。本页仅用于学习交流。</p>
+  </footer>
+</div>
+
+<script>
+  function checkStrength() {
+    const v = document.getElementById("pwdInput").value;
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (v.length >= 12) score++;
+    if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+    if (/\d/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+
+    const levels = [
+      { label: "太弱了，很容易被破解", color: "#ef4444", bars: 1 },
+      { label: "较弱，建议加强", color: "#f59e0b", bars: 2 },
+      { label: "一般，可以更好", color: "#facc15", bars: 3 },
+      { label: "不错，比较安全", color: "#2dd4bf", bars: 4 },
+      { label: "很强，非常安全", color: "#22c55e", bars: 4 }
+    ];
+
+    let idx = 0;
+    if (score <= 1) idx = 0;
+    else if (score === 2) idx = 1;
+    else if (score === 3) idx = 2;
+    else if (score === 4) idx = 3;
+    else idx = 4;
+
+    const lv = levels[idx];
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById("s" + i);
+      el.style.background = i <= lv.bars ? lv.color : "#334155";
+    }
+    document.getElementById("strengthText").innerHTML =
+      v === "" ? "输入密码后即可看到强度评估。" : "强度：<b style='color:" + lv.color + "'>" + lv.label + "</b>";
+  }
+</script>
+</body>
+</html>
