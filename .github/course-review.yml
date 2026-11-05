@@ -304,3 +304,121 @@ assignments:
       - lab6_dns.png 应能看出 mysite.test（或学生自定域名）与 127.0.0.1 的对应关系，hosts 文件内容、ping 输出、浏览器地址栏中的 mysite.test:8000 任意一种出现即可；不要求三者同时出现在同一张图中。
       - 四张截图应来自学生本人操作，能看到自己跑出来的站点或终端输出；出现手机拍屏反光、摩尔纹、明显倾斜或关键文字无法辨认时判为不合格。普通截图缩放、窗口遮挡、界面语言不同不影响完成。
       - 截图中出现 123456 之类示例密码或用户名列表均属正常，不因此判不合格；出现公网域名或公网访问地址时按不合格处理。
+  Lab7:
+    enabled: true
+    deadline: "2026-11-14T00:00:00+08:00"
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab7/Lab7.md
+    required_files:
+      - Lab7.md
+      - lab7_basics.c
+      - imgs/lab7_run.png
+      - imgs/lab7_debug.png
+    template_metrics:
+      enabled: true
+      report_file: Lab7.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab7_run.png
+      - imgs/lab7_debug.png
+    review_points:
+      - >-
+        本次只提交 Lab7.md、lab7_basics.c、imgs/lab7_run.png、imgs/lab7_debug.png 四个文件。lab7_basics.c 是必交的本人最终 C 源码；不提交 TEACHING.md、CLion 项目、CMakeLists.txt、构建产物、日志或额外图片。模板行数与字符数量检查只针对 Lab7.md，不应用于 C 源码。
+      - >-
+        Lab7.md 保留模板中的说明、代码示例、表格和图片引用，只替换指定填写位置。第四节包括 4.1 四项基本信息；4.2 本人四行程序输出和三项变量/数组记录；4.3 四项调试记录；4.4 三道简答题。填写位置不能留空或保留占位提示。姓名和 10 位学号须与登记身份一致，模板代码中的示例学号不作为本人填写内容。
+      - >-
+        六项任务为 Hello World 输出、直接输出本人学号、定义并输出 int 变量、定义十个数字组成的学号数组、手写十条固定下标输出语句、CLion 断点与单步调试。输出记录应含问候语、直接输出的学号、整数变量值及数组逐位拼接的学号；两处学号和数组数据应对应本人学号，变量名、整数初始值和输出标签可以不同。不要求将完整学号存入单个 int，也不要求循环。
+      - >-
+        调试记录应说明断点语句、整数初始化完成后的高亮语句和变量值、数组首末元素值以及一条 printf 单步前后的高亮语句；接受简短或口语化说明及合理界面差异，不要求固定行号。不要求自定义函数、Step Into/Out、地址、指针、Watches、Memory View、字节序、Kali、命令行编译、CMake 语法、GDB 或汇编。文本审核不因无法看到截图内容而判缺少图片证据，不要求实际运行学生程序。
+      - >-
+        lab7_basics.c 应为本人实际运行和调试的完整 C 程序，包含 main、Hello World 输出、本人学号文字输出、int 变量及其输出、由本人学号十位数字组成的 int 数组，以及十条依次使用固定下标 0 至 9 的输出语句。不得用循环或直接输出完整学号文字代替逐个数组元素输出；变量名称、整数初始值、标签和合理空格可以不同。源码应与报告及截图对应，不能只提交教师示例数据。学生可在项目中使用 main.c，复制提交时命名为 lab7_basics.c；不要求改变 CLion 构建配置。
+    vision_review_points:
+      - >-
+        lab7_run.png 应能辨认 CLion 中的 C 源码和完整四行程序输出：Hello World、本人学号、一个 int 变量值、数组逐位输出的本人学号。源码区域应能辨认十条 printf 按固定下标 0 至 9 依次读取数组元素，不使用循环，不用直接打印完整学号文字代替数组输出。允许输出标签、空格、变量名及整数初始值不同；两处学号及数组数字应与本人登记学号对应。截图中的源码文件叫 main.c 或 lab7_basics.c 均可；提交文件名须为 lab7_basics.c。
+      - >-
+        lab7_debug.png 应能辨认 CLion 的暂停位置、Variables 中初始化完成后的整数变量值及展开的十个学号数组元素。断点命中或 Step Over 后的暂停均可；不要求固定行号和整数值，不要求地址、指针、内存视图或寄存器。仅有断点标记而无暂停状态，或只有普通运行输出，不算完成调试。
+      - >-
+        两张截图来自本人 Windows CLion 实际操作，内容清晰可辨认即可，不要求固定主题、布局、缩放或界面语言，不使用手机拍屏或网上截图冒充。调试时未换行的数字可能延迟显示，不要求单步后控制台立即出现每一位数字，也不要求调试截图中同时出现完整运行输出。
+  Lab8:
+    enabled: true
+    deadline: "2026-11-21T00:00:00+08:00"
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab8/Lab8.md
+    required_files:
+      - Lab8.md
+      - imgs/lab8_cmake.png
+      - imgs/lab8_asm.png
+      - imgs/lab8_gdb.png
+    template_metrics:
+      enabled: true
+      report_file: Lab8.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab8_cmake.png
+      - imgs/lab8_asm.png
+      - imgs/lab8_gdb.png
+    review_points:
+      - >-
+        本次只提交 Lab8.md 和三张指定截图，共四个文件。教师 mem_basics.c 仅供本地练习，不提交；不要求学生提交 CMakeLists.txt、build/ 目录、可执行文件、.i/.s/.o、压缩包、GDB 日志或其他图片。不得因没有这些文件判为不完整。
+      - >-
+        Lab8.md 保留完整题目、说明、代码示例、表格和图片引用，只填写指定位置。第七节必做报告包括 7.1 七项基本信息；7.2 手工编译记录与 add 反汇编片段；7.3 CMake 构建记录；7.4 五项汇编阅读和两条指令解释；7.5 七项内存与指针观察及两组 x 命令输出；7.6 第 1～8 题知识问答。填写位置不能留空或保留“（填写）”“（粘贴）”等占位提示。
+      - >-
+        6.5 节的 nexti/stepi 指令单步只要求观察一两步，7.6 第 8 题按本人实际回答即可；未使用指令单步时说明“只做了源码单步”仍算完成，不得因没有寄存器截图或独立汇编分析判为不合格。必做主线是手工编译、CMake 构建、add 的少量指令阅读、GDB 断点与内存观察。
+      - >-
+        手工 gcc 与 CMake 两种构建方式均可；CMake 产物位于 build/ 中属正常。反汇编地址、指令编码、是否出现 endbr64、栈偏移和编译器版本不同不构成未完成；允许 objdump 的等价命令、GDB 的 disassemble 或不同顺序的 x 命令。口语化解释、不同地址和截图与报告数值差异不单独判不合格，不要求审核者实际运行学生程序。
+    vision_review_points:
+      - >-
+        lab8_cmake.png 能看出 CMake 配置或构建输出，以及 build/mem_basics 的运行结果即可；配置、构建、运行分两张图也可接受。允许手工 gcc 与 CMake 混排，不要求显示特定 CMake 版本、生成器、目录名或完整六行输出。
+      - >-
+        lab8_asm.png 能看出 add 反汇编中的读取参数、add 或返回指令即可；objdump 与 GDB disassemble 均可，不要求整段函数、特定地址、Intel/AT&T 格式一致或与示例逐字相同。
+      - >-
+        lab8_gdb.png 能看出 GDB 中查看同一数组整数与字节的命令和输出即可，通常为 x/3dw numbers 与 x/12bx numbers；等价地址表达式或能显示整数与字节的 x 命令也可。不要求地址固定、每条输出在一行、x/s word 或寄存器同时出现。
+      - >-
+        三张截图来自本人 Kali 操作，可使用 Windows 截取 VMware 或 Remote-SSH 终端，也可在 Kali 内截图。工具版本、地址、分页方式、主题和窗口布局差异不影响完成；不使用手机拍屏或网上截图冒充。
+  Lab9:
+    enabled: true
+    deadline: "2026-11-28T00:00:00+08:00"
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab9/Lab9.md
+    required_files:
+      - Lab9.md
+      - answers.txt
+      - wp/wp_phase1.md
+      - wp/wp_phase2.md
+      - imgs/lab9_phase1.png
+      - imgs/lab9_phase2.png
+      - imgs/lab9_success.png
+    template_metrics:
+      enabled: true
+      report_file: Lab9.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab9_phase1.png
+      - imgs/lab9_phase2.png
+      - imgs/lab9_success.png
+    review_points:
+      - >-
+        本次只提交 Lab9.md、answers.txt、wp/wp_phase1.md、wp/wp_phase2.md 和三张指定图片，共七个文件。下载包 bomb.tar、原始可执行文件 bomb、bomb.c、README、反汇编临时文件不提交；不得因没有炸弹文件、源码、GDB 日志或后四阶段答案判为不完整。
+      - >-
+        Lab9.md 和两份 WP 保留完整题目、表格、示例及图片引用。报告的必做基本信息、本人最终运行命令与两条成功提示，以及知识问答均完成；两份 WP 的全部指定位置填写，不留“（填写）”“（粘贴）”等占位内容，代码块中要有本人命令或反汇编输出，不能只有固定答案或手册中的解释。
+      - >-
+        Phase 1 WP 包含程序指纹、阶段入口、最终输入、参数设置/字符串比较/返回值分支的反汇编片段、本人 x/s 命令与字符串输出，以及地址和内容、逐字符比较的解释。Phase 2 WP 包含读入返回处与整数内存命令输出、首项/相邻关系/步长/终止条件表、逐项推导表，以及读取转换、lea/mov、x/s/x/dw 和同一行六项输入的解释。实际试验数据可以不是最终答案，不要求故意触发失败，没有错误填写“无”即可。
+      - >-
+        answers.txt 为两行实际输入，第一行字符串，第二行六个空格分隔的十进制整数，不含标签、注释、输出地址或 Markdown 标记；采用 UTF-8 无 BOM、LF 换行，末尾有换行。不要求六阶段输入。文本审核检查存在真实输入和推导，不依据其他版本的固定密码核对内容正确性，不实际运行学生炸弹。
+      - >-
+        本次统一使用官网 Linux/x86-64 自学版，官网说明其评分服务器通知已禁用。不得要求连接评分服务器、注册炸弹、爆炸次数为零、全部六阶段通过、Congratulations 完整成功提示或自然退出码 0；前两阶段成功后仍等待第三行，Ctrl+C/kill 结束属于预期流程。全班使用同一版本，指令地址、字符串和整数答案相同本身不能据此认定抄袭；报告需具备本人观察和解释。
+    vision_review_points:
+      - >-
+        lab9_phase1.png 能看到 phase_1 字符串比较的关键反汇编片段，以及本人 x/s 命令和读到的字符串即可，不要求整段函数、特定地址、固定窗口布局或通过提示同时出现。
+      - >-
+        lab9_phase2.png 能看到整数循环的读取/计算/比较关键片段，以及查看六个整数或相邻两项的命令和输出即可；通常为 x/6dw $rsp 或 x/2dw $rbx-4。试验数据为六个零也接受，不要求截图里的整数一定是最终答案，不要求全部反汇编塞入同一屏。
+      - >-
+        lab9_success.png 必须能看出同一轮运行的两条成功提示 Phase 1 defused. How about the next one? 和 That's number 2. Keep going!；空格差异接受。只到阶段断点、只显示 explode_bomb、只有第一阶段成功或手工 echo 两条提示不算完成。之后等待第三行或被 Ctrl+C 暂停属正常，不要求后四阶段。
+      - >-
+        三张图片来自本人 Kali 调试，可使用 Windows 截取 VMware 或 Remote-SSH 终端，也可在 Kali 内截图。工具版本、地址、分页方式、主题和窗口布局差异不影响完成；不因与教学示例排版不同判不合格，不使用手机拍屏或网上截图冒充。
