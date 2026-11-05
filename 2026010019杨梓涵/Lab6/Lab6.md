@@ -991,27 +991,27 @@ ping -c 1 mysite.test
 
 1. HTML、CSS、JavaScript 各负责什么？双击打开 `login.html` 时为什么没有样式？
 
-   > 填写：HTML 描述页面结构（标题、表单、输入框都在 `login.html` 里），CSS 描述外观（`style.css` 的 `card` 类负责白底圆角卡片），JavaScript 描述行为（TODO 2 的 `addEventListener` 在提交前弹出提示框）。双击打开时没有样式，是因为页面里 `/static/style.css` 是一个以根路径开头的地址，本地直接打开文件时没有任何程序在这个路径上提供这个文件，浏览器取不到样式表，页面只剩下 HTML 结构。
+   > HTML 描述页面结构（标题、表单、输入框都在 `login.html` 里），CSS 描述外观（`style.css` 的 `card` 类负责白底圆角卡片），JavaScript 描述行为（TODO 2 的 `addEventListener` 在提交前弹出提示框）。双击打开时没有样式，是因为页面里 `/static/style.css` 是一个以根路径开头的地址，本地直接打开文件时没有任何程序在这个路径上提供这个文件，浏览器取不到样式表，页面只剩下 HTML 结构。
 
 2. 点击"登录"按钮后，请求是怎么找到后端的？IP 地址、端口号、路径 `/login` 分别起什么作用？
 
-   > 填写：浏览器把表单编码成 `username=alice&password=123456` 放进 POST 请求体，发往地址栏里的主机地址。IP 地址决定请求送到哪台机器（127.0.0.1 就是本机），端口号 8000 决定交给这台机器上哪个监听中的程序（`app.run(port=8000)` 的 Flask），路径 `/login` 决定交给 Flask 路由表里的哪个函数——`@app.route("/login", methods=["POST"])` 注册的 `login()`。
+   > 浏览器把表单编码成 `username=alice&password=123456` 放进 POST 请求体，发往地址栏里的主机地址。IP 地址决定请求送到哪台机器（127.0.0.1 就是本机），端口号 8000 决定交给这台机器上哪个监听中的程序（`app.run(port=8000)` 的 Flask），路径 `/login` 决定交给 Flask 路由表里的哪个函数——`@app.route("/login", methods=["POST"])` 注册的 `login()`。
 
 3. 注册请求从浏览器到 SQLite 经过哪些环节？表单中的 `action`、`method`、`name` 分别起什么作用？
 
-   > 填写：浏览器按 `method="post"`、`action="/register"` 发出 POST 请求，`app.py` 的路由表把它交给 `register()`，函数用 `request.form.get()` 取出字段后执行 `INSERT INTO users (username, password) VALUES (?, ?)` 写入 `notes.db`，成功后返回 201 并设置 Cookie。`action` 指定请求发到哪个路径，`method` 指定用哪种 HTTP 方法（POST 把数据放请求体），`name` 给每个输入框的数据起字段名，后端按这个名字取值。
+   > 浏览器按 `method="post"`、`action="/register"` 发出 POST 请求，`app.py` 的路由表把它交给 `register()`，函数用 `request.form.get()` 取出字段后执行 `INSERT INTO users (username, password) VALUES (?, ?)` 写入 `notes.db`，成功后返回 201 并设置 Cookie。`action` 指定请求发到哪个路径，`method` 指定用哪种 HTTP 方法（POST 把数据放请求体），`name` 给每个输入框的数据起字段名，后端按这个名字取值。
 
 4. SQLite 在本站承担什么工作？如果将用户记录改存到 Python 列表，重启 Flask 后会有什么变化？
 
-   > 填写：SQLite 把注册的用户以 `users` 表的形式存在磁盘文件 `notes.db` 里，`register()` 用 INSERT 写入、`login()` 用 SELECT 验证，数据在进程重启后仍然保留——6.5 重启 Flask 后重新登录 alice 仍然成功。如果改存 Python 列表，数据只存在于内存里，Flask 一关（比如 6.5 那次重启）列表就清空，所有注册过的用户都会消失。
+   > SQLite 把注册的用户以 `users` 表的形式存在磁盘文件 `notes.db` 里，`register()` 用 INSERT 写入、`login()` 用 SELECT 验证，数据在进程重启后仍然保留——6.5 重启 Flask 后重新登录 alice 仍然成功。如果改存 Python 列表，数据只存在于内存里，Flask 一关（比如 6.5 那次重启）列表就清空，所有注册过的用户都会消失。
 
 5. 在开发者工具里把 Cookie 值改成 `nobody` 后，`/me` 为什么会返回 `nobody`？指出相关代码，并给出一种修复方法。
 
-   > 填写：因为 `me()` 里的 `username = request.cookies.get("user", "")` 直接把客户端送来的 Cookie 值返回，`return jsonify({"user": username})` 没有验证这个值是不是登录过程签发的，`nobody` 从未注册也能显示。修复方法之一是改用服务端会话：登录成功后生成随机会话标识并在服务器保存"标识 → 用户"的对应关系，Cookie 里只放标识；伪造的标识对不上任何会话就取不到用户。Flask 自带的 `session` 配合 `SECRET_KEY` 签名也能达到同样效果。
+   > 因为 `me()` 里的 `username = request.cookies.get("user", "")` 直接把客户端送来的 Cookie 值返回，`return jsonify({"user": username})` 没有验证这个值是不是登录过程签发的，`nobody` 从未注册也能显示。修复方法之一是改用服务端会话：登录成功后生成随机会话标识并在服务器保存"标识 → 用户"的对应关系，Cookie 里只放标识；伪造的标识对不上任何会话就取不到用户。Flask 自带的 `session` 配合 `SECRET_KEY` 签名也能达到同样效果。
 
 6. `127.0.0.1`、Kali 私有 IP 和监听参数 `0.0.0.0` 分别表示什么？修改监听地址后，Windows 的访问条件发生了什么变化？
 
-   > 填写：`127.0.0.1` 是回环地址，表示"这台机器自己"，数据包出不了网卡；Kali 的 `192.168.195.129` 是 RFC 1918 私有地址，只在 VMware NAT 局域网内有效；`0.0.0.0` 是服务端监听参数，表示接受发往本机任意网卡的连接。修改前 Flask 只监听 `127.0.0.1:8000`（ss 输出的 LISTEN 行），Windows 发来的连接根本不被接收；改成 `0.0.0.0:8000` 后，同一个 NAT 局域网里的 Windows 就能通过 `192.168.195.129:8000` 访问本站了。
+   > `127.0.0.1` 是回环地址，表示"这台机器自己"，数据包出不了网卡；Kali 的 `192.168.195.129` 是 RFC 1918 私有地址，只在 VMware NAT 局域网内有效；`0.0.0.0` 是服务端监听参数，表示接受发往本机任意网卡的连接。修改前 Flask 只监听 `127.0.0.1:8000`（ss 输出的 LISTEN 行），Windows 发来的连接根本不被接收；改成 `0.0.0.0:8000` 后，同一个 NAT 局域网里的 Windows 就能通过 `192.168.195.129:8000` 访问本站了。
 
 ---
 
