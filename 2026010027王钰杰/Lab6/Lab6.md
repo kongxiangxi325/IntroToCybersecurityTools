@@ -983,7 +983,7 @@ ping -c 1 mysite.test
 | 重复注册的状态码 | `409` |
 | 浏览器地址栏直接访问 `/login` 的状态码 | `405` |
 | 点击“注册”时提示框显示的内容 | `将发送到 /register 的请求体：` 换行 `username=alice` 换行 `password=123456` |
-| `/etc/hosts` 新增记录 | `192.168.192.129 mysite.test` |
+| `/etc/hosts` 新增记录 | `127.0.0.1 mysite.test` |
 
 ### 9.2 知识问答
 
