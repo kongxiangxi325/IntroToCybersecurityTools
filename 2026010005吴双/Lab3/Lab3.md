@@ -509,12 +509,14 @@ Host kali-oslab
 | 项目 | 你的填写内容 |
 | :--- | :--- |
 | 配置的主机别名（如 `kali-oslab`） | `kali-oslab` |
-| 是否连接成功 | 未完成截图验收：连接过程中 VSCode 标题栏一度显示 `kali [SSH: kali-oslab]`，虚拟机内 `~/.vscode-server` 已生成且 `vscode-server` 进程正常运行，但随后 VSCode 窗口反复异常退出，未能留存符合要求的截图 |
-| 能否打开远程文件夹 | 未完成（远程文件夹始终未成功加载） |
-| 远程终端里 `uname -a` 的输出 | 未能取得截图（虚拟机自身内核为 `Linux kali 6.19.14+kali-amd64`） |
-| Remote-SSH 是否合格 | 不合格：本项缺少合格截图，如实填报为未完成 |
+| 是否连接成功 | 是。标题栏显示 `kali [SSH: kali-oslab]`，左下角状态栏显示 `SSH: kali-oslab`，未再提示重新输入密码 |
+| 能否打开远程文件夹 | 能。资源管理器打开的是虚拟机的 `/home/kali`，列出 `.cache`、`.config`、`.copilot`、`.dbus`、`.gnupg`、`.java`、`.local`、`.ssh`、`.vscode`、`.vscode-server`、`Desktop`、`Documents`、`Downloads`、`Music`、`Pictures`、`Projects`、`Public`、`Templates`、`Videos` 等目录 |
+| 远程终端里 `uname -a` 的输出 | `Linux kali 6.19.14+kali-amd64 #1 SMP PREEMPT_DYNAMIC Ka 11 6.19.14-1kali1 (2026-05-05) x86_64 GNU/Linux`；同一终端里 `whoami` 为 `kali`、`hostname` 为 `kali`、`hostname -I` 为 `192.168.14.130`、`pwd` 为 `/home/kali` |
+| Remote-SSH 是否合格 | 合格 |
 
-> **说明**：本项未完成，`imgs/` 中不提供 `lab3_vscode_remote.png`。排查过程中确认 SSH 服务端、22 端口和 VSCode 扩展均正常（`~/.vscode-server` 已安装、远程服务进程存在），问题出在宿主机侧 VSCode 进程不稳定，与虚拟机和 SSH 配置无关。后续会重做本项并补充截图。
+![VSCode Remote-SSH 连接 Kali](imgs/lab3_vscode_remote.png)
+
+> **说明**：截图里窗口标题为 `kali [SSH: kali-oslab]`，左下角状态栏为 `SSH: kali-oslab`，左侧资源管理器是虚拟机的 `/home/kali`，下方是最大化后的集成终端，五条命令（`whoami`、`hostname`、`hostname -I`、`uname -a`、`pwd`）与其输出一一对应。终端提示符 `┌──(kali㉿kali)-[~]` 和 `uname -a` 里的 `kali-amd64` 内核都说明这些命令跑在虚拟机里，不是在 Windows 上。
 
 ---
 
@@ -716,7 +718,7 @@ sudo apt update
 | 软件源 | `sudo apt update` 成功，没有 `Err` 或 `Failed`（使用官方源或国内镜像站均可） | **合格**：使用官方源 `http.kali.org`（`kali-rolling`），`Fetched 77.8 MB`，无任何报错 |
 | CPU、内存、存储 | 至少 2 核、4GB、40GB，且与宿主机档位匹配 | **合格**：2 核 / 4096MB（显示 3.8Gi）/ 80.1GB，根分区可用 59GB；内存未按推荐档加到 6144MB，但满足 ≥4GB 要求 |
 | MobaXterm 远程登录 | 从 Windows 用 MobaXterm 能 SSH 登录 Kali 并在远程终端执行命令 | **合格**：`kali@kali` 会话登录成功，`whoami`、`hostname`、`hostname -I`、`uname -a` 均有正确输出 |
-| VSCode Remote-SSH | VSCode 能通过 Remote-SSH 连接 Kali，打开远程文件夹并在远程终端执行命令 | **不合格（未完成）**：连接建立过程中 `vscode-server` 已在虚拟机内安装运行，但宿主机 VSCode 窗口反复异常退出，未能打开远程文件夹并留存截图 |
+| VSCode Remote-SSH | VSCode 能通过 Remote-SSH 连接 Kali，打开远程文件夹并在远程终端执行命令 | **合格**：标题栏 `kali [SSH: kali-oslab]`、左下角 `SSH: kali-oslab`，资源管理器打开的是虚拟机 `/home/kali`，集成终端中 `whoami`、`hostname`、`hostname -I`、`uname -a`、`pwd` 全部为虚拟机内的输出 |
 
 简要说明你遇到的问题、解决方法，以及当前环境是否可以继续完成后续实验：
 
@@ -728,9 +730,11 @@ sudo apt update
 >
 > 3. **IP 会随 DHCP 变化**：NAT 模式下虚拟机重启后可能换 IP，连接前先用 `hostname -I` 确认，再核对 SSH 客户端里填的地址。
 >
-> 4. **VSCode Remote-SSH 未完成**：扩展已安装，`~/.ssh/config` 里配置了 `Host kali-oslab`，连接时虚拟机内已经生成 `~/.vscode-server` 并有 `vscode-server` 进程在跑，说明 SSH 链路本身是通的；但宿主机这边的 VSCode 窗口在加载远程文件夹时反复异常退出（多次重启、清掉进程后重开仍然复现），最终没能截到「左下角 SSH: kali-oslab + 远程文件夹 + 远程终端 `uname -a`」这一张图。这一项如实按未完成填报，后续重装/修复 VSCode 后补做并补充截图。
+> 4. **VSCode Remote-SSH 首次连接卡在“正在下载 VS Code 服务器”**：扩展装好、`~/.ssh/config` 里配好 `Host kali-oslab` 之后，连接能建立（窗口标题已经是 `kali [SSH: kali-oslab]`），但右下角一直提示“正在下载 VS Code 服务器…”，装了十几分钟也没结束，集成终端因此是空的、打不开远程文件夹。排查发现虚拟机内 `~/.vscode-server/cli/servers/` 下给本机 VSCode 版本（commit `a717861c…`）准备的目录是空的，只有一份旧版本的 `Stable-6bab64e…`，说明服务端包没下下来。解决办法是绕开虚拟机内的下载：在宿主机按 commit 号下载对应的 `server-linux-x64` 包，用 `vmrun copyFileFromHostToGuest` 拷进虚拟机，解压到 `~/.vscode-server/cli/servers/Stable-a717861c07586a53d83b80d742cd3f59b20a6273/server/`（`tar --strip-components=1`），再重新连接，VSCode 检测到本地已有服务端就不再下载，远程窗口正常打开。
 >
-> 5. **当前环境能否继续后续实验**：可以。虚拟机可正常启动、联网、`apt` 可用，SSH 22 端口常驻监听，MobaXterm 远程终端可稳定执行命令；后面的实验用 MobaXterm 或虚拟机内终端都能完成，只有 VSCode 远程编辑这一项需要先修好宿主机端的 VSCode。
+> 5. **顺带修掉的一个小坑：Windows 上的私钥权限**。用系统自带 `ssh.exe` 走公钥登录时提示 `UNPROTECTED PRIVATE KEY FILE`、`Bad permissions`，原因是 `lab3_kali` 这个私钥文件继承了 `Everyone` 的读取权限。用 `icacls lab3_kali /inheritance:r /grant:r "<用户名>:F"` 收紧到只有本账户可读之后，公钥登录正常，VSCode 连接时也不再反复弹密码框。
+>
+> 6. **当前环境能否继续后续实验**：可以。虚拟机可正常启动、联网、`apt` 可用，SSH 22 端口常驻监听，MobaXterm 与 VSCode Remote-SSH 两条远程通道均已打通，后续实验在虚拟机内终端或 VSCode 远程窗口里都能完成。
 
 ---
 
