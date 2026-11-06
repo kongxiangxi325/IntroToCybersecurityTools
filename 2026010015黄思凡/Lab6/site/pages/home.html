@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lab6 小站 - 登录成功</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="card">
+  <h1>Lab6 小站</h1>
+  <p class="success">登录成功</p>
+  <p class="tip">这个静态页面不会自动显示用户名，可以通过 /me 查询服务器读到的身份。</p>
+
+  <section class="panel">
+    <h2>查询当前身份</h2>
+    <p class="tip">登录后在浏览器访问下面的地址，页面会显示服务器从 Cookie 中读到的用户名。</p>
+    <pre>http://127.0.0.1:8000/me</pre>
+  </section>
+
+  <p class="foot"><a href="/logout">退出登录</a></p>
+</main>
+</body>
+</html>
