@@ -30,12 +30,13 @@
     </label>
     <button type="submit">注册</button>
   </form>
+
 </main>
 <script>
-  var form = document.querySelector("form[action='/register']");
-  form.addEventListener("submit", function () {
-    var username = form.querySelector("[name='username']").value;
-    var password = form.querySelector("[name='password']").value;
+  var regForm = document.querySelector("form[action='/register']");
+  regForm.addEventListener("submit", function () {
+    var username = regForm.querySelector("[name='username']").value;
+    var password = regForm.querySelector("[name='password']").value;
     alert("将发送到后端：username=" + username + "&password=" + password);
   });
 </script>

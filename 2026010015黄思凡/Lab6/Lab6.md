@@ -969,13 +969,13 @@ ping -c 1 mysite.test
 
 | 项目 | 记录 |
 | :--- | :--- |
-| Kali 的 IP 地址 | 本次 Kali 虚拟机不可用（SSH 连接超时、VMware 网段内仅网关在线），实验改在 Windows 本机完成；本机回环 `127.0.0.1`，另有一网卡 `172.19.164.60`。环境受限说明见下方第 4 行与第十节 |
+| Kali 的 IP 地址 | 本次 Kali 虚拟机未启动（VMware 网段 192.168.203.0/24 内 22 端口无响应），实验在 Windows 本机完成：回环 `127.0.0.1`，本机无线上网地址 `172.19.210.165` |
 | 修改前的监听地址 | `127.0.0.1:8000` |
 | 修改后的监听地址 | `0.0.0.0:8000` |
-| Windows 能否通过 Kali IP 访问；使用 Kali 浏览器代替时写明原因 | Kali 不可用；改用本机浏览器访问 `http://127.0.0.1:8000` 完成全部验证（环境受限，已在 9.1 首行与第十节说明） |
-| `notes.db` 完整路径 | `C:\Users\ASUS\Lab6run\site\notes.db` |
+| Windows 能否通过 Kali IP 访问；使用 Kali 浏览器代替时写明原因 | Kali 未启动无法验证；改用本机浏览器访问 `http://127.0.0.1:8000`，注册、登录、`/me` 全部正常（环境受限的处理见本节首行） |
+| `notes.db` 完整路径 | `C:\Users\sesame\Lab6run\site\notes.db` |
 | 两个测试用户名 | `alice`、`bob` |
-| 数据库中的密码保存形式 | 明文（密码原文直接写入 `users` 表，本站第一处教学缺陷） |
+| 数据库中的密码保存形式 | 明文保存，`users` 表中直接是 `123456`、`abc123` 原文 |
 | 登录请求响应头中的 `Set-Cookie` 行（F12 网络面板） | `Set-Cookie: user=alice; Path=/` |
 | 退出登录后访问 `/me` 显示的内容 | `{"user":""}` |
 | 把 Cookie 值改为 `nobody` 后 `/me` 显示的内容 | `{"user":"nobody"}` |
@@ -983,7 +983,7 @@ ping -c 1 mysite.test
 | 重复注册的状态码 | `409` |
 | 浏览器地址栏直接访问 `/login` 的状态码 | `405` |
 | 点击"注册"时提示框显示的内容 | `将发送到后端：username=alice&password=123456` |
-| `/etc/hosts` 新增记录 | `127.0.0.1 mysite.test` |
+| `/etc/hosts` 新增记录 | `127.0.0.1 mysite.test`（Windows 的 hosts 文件位于 `C:\Windows\System32\drivers\etc\hosts`） |
 
 ### 9.2 知识问答
 
@@ -991,27 +991,27 @@ ping -c 1 mysite.test
 
 1. HTML、CSS、JavaScript 各负责什么？双击打开 `login.html` 时为什么没有样式？
 
-   > HTML 描述页面结构（页面包含哪些内容，如 `<form>`、`<input>`）；CSS 描述样式（外观，如 `.card` 圆角白底卡片、`.panel` 灰底面板）；JavaScript 描述行为（交互，如 TODO 2 给注册表单挂 `submit` 事件并 `alert` 弹提示框）。双击打开 `login.html` 时没有样式，因为页面引用的样式表地址是 `/static/style.css`，本地双击是以 `file://` 方式打开，浏览器向该路径请求样式表时本机没有任何程序提供这个文件（样式由后端在 `/static/` 下提供），请求失败故无样式；启动后端后访问即有样式。
+   > HTML 决定页面上有哪些元素，例如 `login.html` 里的 `form`、`label`、`input` 和按钮；CSS 决定这些元素长什么样，由 `<link rel="stylesheet" href="/static/style.css">` 引入；JavaScript 决定页面能做什么，例如 `login.html` 底部的脚本在提交注册表单时弹出提示框。双击打开时浏览器地址是 `file:///`，于是去向本地文件系统请求 `/static/style.css`，而 `/static/` 是 Flask 应用里的路由（`app = Flask(__name__)` 默认以 `static` 目录提供），文件系统里并没有这个路径，样式表加载失败，页面就只剩纯文字。
 
 2. 点击"登录"按钮后，请求是怎么找到后端的？IP 地址、端口号、路径 `/login` 分别起什么作用？
 
-   > 点击"登录"后，浏览器先做两级寻址：IP+端口把数据送到目标机器上的目标程序，路径 `/login` 告诉该程序请求哪个资源。本实验 `app.py` 用 `app.run(host="127.0.0.1", port=8000)`，Flask 一直监听 8000 端口；`host` 定位机器、`port` 定位程序、`/login` 在连接建立后作为请求行第一行的路径发给对方，Flask 查路由表 `@app.route("/login", methods=["POST"])` 命中并调用 `login()`。实验中地址栏用 `127.0.0.1:8000`（本机）访问，跨机器访问时只把 IP 换成 Kali 私有 IP，路径不变。
+   > `action="/login"` 是相对路径，浏览器把它拼到当前页面的协议、主机和端口上，得到 `http://127.0.0.1:8000/login`。IP 地址决定请求发往哪台机器，端口 `8000` 决定交给这台机器上监听该端口的 Flask 进程（`app.run(host="0.0.0.0", port=8000)`），路径 `/login` 用来在路由表里匹配到 `@app.route("/login", methods=["POST"])` 装饰的 `login()` 函数。三者分别定位机器、进程和函数，缺一不可。
 
 3. 注册请求从浏览器到 SQLite 经过哪些环节？表单中的 `action`、`method`、`name` 分别起什么作用？
 
-   > 注册请求从浏览器到 SQLite 经过：浏览器把表单编码为 `username=bob&password=123456` 并 POST 到 `/register` → Flask 查路由 `@app.route("/register", methods=["POST"])` 命中 `register()` → `register()` 执行参数化 SQL `INSERT INTO users (username, password) VALUES (?, ?)` 写入 SQLite（实验结果：注册 `alice`、`bob` 均返回 201，库中两行）。表单中 `action` 指定提交到的路径（`/register`）、`method` 指定请求方法（POST，字段放请求体而非 URL）、`name` 指定字段名（后端按 `username`/`password` 取值）。
+   > 表单的 `action` 决定请求发往 `/register`，`method="post"` 决定字段放在请求体而不是 URL 里，`name` 决定键值对的名字，浏览器据此编码出 `username=alice&password=123456` 并用 HTTP POST 发出。请求到达 Flask 后按路由匹配到 `register()`，函数用 `request.form.get` 取出两个字段，再执行 `conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", ...)` 交给 SQLite 写入 `notes.db`。
 
 4. SQLite 在本站承担什么工作？如果将用户记录改存到 Python 列表，重启 Flask 后会有什么变化？
 
-   > SQLite 在本站负责持久化保存用户记录：整个数据库就是一个文件 `notes.db`，`init_db()` 建 `users` 表，注册时 INSERT、登录时 SELECT，重启 Flask 后数据仍在文件中（实验中停止并重启 Flask 后仍可用 `alice` 登录）。若改存 Python 列表，列表在内存中，Flask 进程一结束数据就没了，重启后已注册用户全部丢失，且无法在两个并发请求间共享，也不具备 SQL 的查询与并发控制能力。
+   > SQLite 负责把 `users` 表持久化到磁盘文件 `notes.db`，Flask 退出后数据仍在，重启后 `alice` 依然能通过 `SELECT id FROM users WHERE username = ? AND password = ?` 查到记录并登录。如果改成 Python 列表，数据只存在于进程内存中，`python3 app.py` 一重启列表就被清空，再用 `alice` 登录会走到 `row is None` 分支返回 `401`，之前注册的账号全部丢失。
 
 5. 在开发者工具里把 Cookie 值改成 `nobody` 后，`/me` 为什么会返回 `nobody`？指出相关代码，并给出一种修复方法。
 
-   > `/me` 的 TODO 7 两行 `username = request.cookies.get("user", "")` 与 `return jsonify({"user": username})` 直接把客户端 Cookie 里的 `user` 值原样返回，并不验证它是否由登录过程签发；因此把 Cookie 改成 `nobody` 后 `/me` 就返回 `{"user":"nobody"}`（`nobody` 从未注册过）。修复方法：登录成功后服务端生成一个随机会话标识并保存"标识→用户"的对应关系（或用 Flask 的 `session` 配合妥善保管的 `SECRET_KEY` 对会话数据签名），Cookie 里只放标识，`/me` 据标识查真实用户，伪造的标识对不上任何会话即失效。
+   > `/me` 的实现是 `username = request.cookies.get("user", "")` 加 `jsonify({"user": username})`，它把浏览器送来的 Cookie 原样当作身份，没有签名也没有服务端核对，所以改成 `nobody` 就返回 `{"user":"nobody"}`，这正是本站的第二处教学缺陷。修复方法是改用服务端会话：设置 `app.secret_key` 后用 Flask 的 `session`，Cookie 里只保存经过签名的会话 ID，用户名保存在服务端，客户端篡改后签名校验失败即视为未登录。
 
 6. `127.0.0.1`、Kali 私有 IP 和监听参数 `0.0.0.0` 分别表示什么？修改监听地址后，Windows 的访问条件发生了什么变化？
 
-   > `127.0.0.1` 是回环地址，指本机自己、数据出不了网卡；Kali 私有 IP（如 `192.168.x.x`）属于 RFC 1918 私有地址段，只在局域网内有效、公网路由器不转发；监听参数 `0.0.0.0` 表示"接受发往本机任意 IPv4 网卡地址的连接"。修改前 `host="127.0.0.1"` 只接受本机回环连接（实验中 `netstat` 显示 `127.0.0.1:8000 LISTENING`），其他机器无法连入；改为 `host="0.0.0.0"` 后（实验中显示 `0.0.0.0:8000 LISTENING`），同局域网的 Windows 才能连入 8000 端口访问站点。本实验因 Kali 不可用改在本机完成，故以 `127.0.0.1` 访问。
+   > `127.0.0.1` 是回环地址，永远指向本机自己，只有本机进程能连；Kali 的 `192.168.x.x` 属于私有地址段，是这台虚拟机在 NAT 网段里的内网地址，同网段的其他机器可以直接访问；`0.0.0.0` 不是可访问的地址，而是 `app.run(host=...)` 的监听参数，表示在本机所有网卡上都接受 8000 端口的连接。原来监听 `127.0.0.1:8000` 时只有 Kali 自己能连，Windows 访问会被拒绝；改成 `0.0.0.0` 后 Windows 用 Kali 的私有 IP 加 8000 端口就能打开站点。
 
 ---
 
