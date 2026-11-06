@@ -1,12 +1,11 @@
 #include <stdio.h>
 
-/* 示例学号为 2026010099。练习时替换字符串和数组中的学号。 */
 int main(void) {
     printf("Hello World\n");
-    printf("Student ID: 2026010099\n");
+    printf("Student ID: 2026010028\n");
 
     int number = 7;
-    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 9, 9};
+    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 2, 8};
 
     printf("number = %d\n", number);
     printf("Array ID: ");

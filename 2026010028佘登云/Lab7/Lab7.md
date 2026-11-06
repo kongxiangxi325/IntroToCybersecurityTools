@@ -315,9 +315,11 @@ Step Over 会执行当前语句，然后在后续位置暂停。对本次的 `pr
 粘贴本人最终程序的完整四行输出：
 
 ```text
-C:\Users\28248\CLionProjects\untitled1\cmake-build-debug\untitled1.exe
-number: 10
+C:\Users\28248\Desktop\my\Lab7_clion\cmake-build-debug\Lab7_clion.exe
+Hello World
 Student ID: 2026010028
+number = 7
+Array ID: 2026010028
 
 进程已结束，退出代码为 0
 ```
@@ -328,18 +330,18 @@ Student ID: 2026010028
 
 | 项目 | 本人记录 |
 | :--- | :--- |
-| `int` 变量名称及初始值 | number=16 |
-| 学号数组名称及十个初始值，按顺序用逗号分隔 | studentID,2,4,6,8,10,12,14,16,0,0 |
-| 直接输出的学号与数组输出的学号是否一致 | 不一致 |
+| `int` 变量名称及初始值 | number = 7 |
+| 学号数组名称及十个初始值，按顺序用逗号分隔 | student_id，2, 0, 2, 6, 0, 1, 0, 0, 2, 8 |
+| 直接输出的学号与数组输出的学号是否一致 | 一致 |
 
 ### 4.3 调试观察记录
 
 | 观察项目 | 本人记录 |
 | :--- | :--- |
-| 设置断点的源码语句 | printf(format:"number:%d\n",studentID[4]); |
-| 整数变量初始化完成后的高亮语句及变量值 |int number = 16; number=16；int shedengyun = 10; shedengyun=10 |
-| 数组初始化完成后，下标 `0` 和下标 `9` 的值 |studentID[0]=2，studentID[9]=0  |
-| 对一条 `printf` 执行 Step Over 前后的高亮语句 |执行前：printf( format:"number: %d\n", studentID[4]); 执行后： printf( format:"Student ID: 2026010028\n");|
+| 设置断点的源码语句 | int number = 7; |
+| 整数变量初始化完成后的高亮语句及变量值 | int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 2, 8};，此时 number = 7 |
+| 数组初始化完成后，下标 `0` 和下标 `9` 的值 | student_id[0] = 2，student_id[9] = 8 |
+| 对一条 `printf` 执行 Step Over 前后的高亮语句 | 执行前：printf("number = %d\n", number); 执行后：printf("Array ID: "); |
 
 记录高亮语句时填写实际源码内容即可，不要求固定行号。数组元素和整数变量值应在对应初始化完成后记录。
 
@@ -349,15 +351,15 @@ Student ID: 2026010028
 
 1. `printf("7\n");` 与 `printf("%d\n", number);` 分别从哪里取得输出内容？
 
-   > printf("\n");  输出内容来自字符串常量； printf("%d\n", number);  从变量number中读取数据输出。
+   > `printf("7\n");` 的输出内容来自双引号内的字符串常量本身；`printf("%d\n", number);` 由 `%d` 占位，运行时从变量 `number` 的值取得输出内容。
 
 2. 学号数组有十个元素，为什么输出时使用下标 `0` 至 `9`？下标 `3` 对应学号第几位？
 
-   > 2. C语言数组下标从0开始，10个元素对应下标0~9；下标3对应学号第4位。
+   > C 语言数组下标从 0 开始，十个元素依次对应下标 `0` 至 `9`；下标 `3` 对应学号第 4 位，本人学号该位是 6。
 
 3. 首次暂停在 `int number = 7;` 时，为什么需要执行 Step Over 后再记录变量的初始值？如果使用了其他变量名或初始值，按本人的代码说明即可。
 
-   > 3. 断点停在初始化语句这一行时，变量还没有完成赋值；执行Step Over单步跨过这条语句之后，赋值操作才完成，才能读到正确的初始值。
+   > 断点停在该行时这条初始化语句尚未执行，`number` 还没有完成赋值，面板里读到的不是本次结果；执行一次 Step Over 让赋值语句执行完毕，高亮移到数组定义行，此时读到的才是本次的初始值。
 
 ### 4.5 实验截图
 
@@ -368,9 +370,9 @@ Student ID: 2026010028
 
 运行截图中的源码区域应能辨认十条固定下标输出语句；调试截图中的数组元素应与本人学号逐位对应。截图不要求固定主题、面板布局或整数变量初始值。
 
-![程序运行结果]![alt text](lab7_run.png)
+![程序运行结果](imgs/lab7_run.png)
 
-![断点与变量观察]![alt text](lab7_debug.png)
+![断点与变量观察](imgs/lab7_debug.png)
 
 ## 五、截图与提交
 
