@@ -991,27 +991,27 @@ ping -c 1 mysite.test
 
 1. HTML、CSS、JavaScript 各负责什么？双击打开 `login.html` 时为什么没有样式？
 
-   HTML 负责页面的结构和内容（标题、两个输入框、按钮），CSS 负责外观（卡片的宽度、留白、颜色），JavaScript 负责交互（点“注册”时先弹出提示框）。双击打开 `login.html` 时没有样式，是因为 `<link rel="stylesheet" href="/static/style.css">` 里的 `/static/style.css` 是以站点根目录开头的绝对路径，用 `file://` 本地打开时会被解析成磁盘根目录下的路径，取不到文件；改由 Flask 提供页面后，`/static/style.css` 才会映射到 `site/static/style.css`。
+   > HTML 负责页面的结构和内容（标题、两个输入框、按钮），CSS 负责外观（卡片的宽度、留白、颜色），JavaScript 负责交互（点“注册”时先弹出提示框）。双击打开 `login.html` 时没有样式，是因为 `<link rel="stylesheet" href="/static/style.css">` 里的 `/static/style.css` 是以站点根目录开头的绝对路径，用 `file://` 本地打开时会被解析成磁盘根目录下的路径，取不到文件；改由 Flask 提供页面后，`/static/style.css` 才会映射到 `site/static/style.css`。
 
 2. 点击"登录"按钮后，请求是怎么找到后端的？IP 地址、端口号、路径 `/login` 分别起什么作用？
 
-   浏览器把表单里 `action="/login"` 拼到当前页面的地址上得到 `http://127.0.0.1:8000/login`，再按 IP 找到机器、按端口找到监听 8000 的 Flask 进程、按路径匹配到 `@app.route("/login", methods=["POST"])` 这个函数。IP 地址决定“访问哪一台机器”，端口号决定“访问这台机器上的哪个程序”，路径 `/login` 决定“由程序里的哪个处理函数来响应”。
+   > 浏览器把表单里 `action="/login"` 拼到当前页面的地址上得到 `http://127.0.0.1:8000/login`，再按 IP 找到机器、按端口找到监听 8000 的 Flask 进程、按路径匹配到 `@app.route("/login", methods=["POST"])` 这个函数。IP 地址决定“访问哪一台机器”，端口号决定“访问这台机器上的哪个程序”，路径 `/login` 决定“由程序里的哪个处理函数来响应”。
 
 3. 注册请求从浏览器到 SQLite 经过哪些环节？表单中的 `action`、`method`、`name` 分别起什么作用？
 
-   浏览器按 `name="username"`、`name="password"` 两个字段取出输入值，按 `method="post"` 编码成请求体，POST 到 `action="/register"`；Flask 用 `request.form.get("username", "").strip()` 取值，执行 `INSERT INTO users (username, password) VALUES (?, ?)` 写入 `notes.db`，成功后返回 201 并 `set_cookie` 种下身份。`action` 决定提交到哪个地址，`method` 决定用什么请求方法，`name` 决定提交时字段叫什么名字（也是后端 `request.form.get` 的键名）。
+   > 浏览器按 `name="username"`、`name="password"` 两个字段取出输入值，按 `method="post"` 编码成请求体，POST 到 `action="/register"`；Flask 用 `request.form.get("username", "").strip()` 取值，执行 `INSERT INTO users (username, password) VALUES (?, ?)` 写入 `notes.db`，成功后返回 201 并 `set_cookie` 种下身份。`action` 决定提交到哪个地址，`method` 决定用什么请求方法，`name` 决定提交时字段叫什么名字（也是后端 `request.form.get` 的键名）。
 
 4. SQLite 在本站承担什么工作？如果将用户记录改存到 Python 列表，重启 Flask 后会有什么变化？
 
-   SQLite 把注册数据持久化到磁盘文件 `notes.db` 里，Flask 重启后记录仍在，`alice`、`bob` 依然能登录。如果把用户记录改存到 Python 列表，数据只存在进程内存中，重启 Flask 后列表被重新初始化为空，所有账号都会消失，之前注册的用户会变成 401 登录失败。
+   > SQLite 把注册数据持久化到磁盘文件 `notes.db` 里，Flask 重启后记录仍在，`alice`、`bob` 依然能登录。如果把用户记录改存到 Python 列表，数据只存在进程内存中，重启 Flask 后列表被重新初始化为空，所有账号都会消失，之前注册的用户会变成 401 登录失败。
 
 5. 在开发者工具里把 Cookie 值改成 `nobody` 后，`/me` 为什么会返回 `nobody`？指出相关代码，并给出一种修复方法。
 
-   `/me` 的代码是 `username = request.cookies.get("user", "")` 加 `return jsonify({"user": username})`，服务器把浏览器送来的 Cookie 值原样返回，没有校验这个值是否真的登录过，所以改成 `nobody` 就返回 `{"user":"nobody"}`。修复方法是登录成功后用 Flask 的 `session`（带签名，客户端改了就失效）或生成随机 token 存进数据库，请求时用 token 查库确认身份，而不是直接信任 Cookie 里的用户名。
+   > `/me` 的代码是 `username = request.cookies.get("user", "")` 加 `return jsonify({"user": username})`，服务器把浏览器送来的 Cookie 值原样返回，没有校验这个值是否真的登录过，所以改成 `nobody` 就返回 `{"user":"nobody"}`。修复方法是登录成功后用 Flask 的 `session`（带签名，客户端改了就失效）或生成随机 token 存进数据库，请求时用 token 查库确认身份，而不是直接信任 Cookie 里的用户名。
 
 6. `127.0.0.1`、Kali 私有 IP 和监听参数 `0.0.0.0` 分别表示什么？修改监听地址后，Windows 的访问条件发生了什么变化？
 
-   `127.0.0.1` 是回环地址，数据不出本机，只有 Kali 自己访问得到；Kali 的私有 IP `192.168.245.128` 是虚拟网卡在局域网中的地址，同网段的宿主机可以通过它访问；`0.0.0.0` 不是某个具体地址，而是“监听本机所有网卡”的写法。改成 `0.0.0.0` 后，Windows 才能用 `http://192.168.245.128:8000` 访问到站点；只监听 `127.0.0.1` 时，来自宿主机的请求根本不会交给 Flask，表现就是无法连接。
+   > `127.0.0.1` 是回环地址，数据不出本机，只有 Kali 自己访问得到；Kali 的私有 IP `192.168.245.128` 是虚拟网卡在局域网中的地址，同网段的宿主机可以通过它访问；`0.0.0.0` 不是某个具体地址，而是“监听本机所有网卡”的写法。改成 `0.0.0.0` 后，Windows 才能用 `http://192.168.245.128:8000` 访问到站点；只监听 `127.0.0.1` 时，来自宿主机的请求根本不会交给 Flask，表现就是无法连接。
 
 ---
 
