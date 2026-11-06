@@ -924,6 +924,8 @@ http://Kali的IP:8000
 
 ![从 Windows 访问登录成功页](imgs/lab6_site.png)
 
+> 截图说明：本节按讲义允许的方式改用 Kali 自带 Firefox 完成，地址栏保留本机地址 `http://127.0.0.1:8000/login`（课程规则要求站点的截图使用本机或虚拟机地址）；Windows 侧对 `http://10.93.127.211:8000` 的可达性改用 `curl` 验证，返回码记在 9.1 的对应行。
+
 Windows 能访问的原因：两台机器在同一个 VMware NAT 局域网里，且 Kali 的 Flask 正监听 `0.0.0.0`。Lab3 的 SSH 也是同样原理：Kali 用同一个私有 IP 在 22 端口接受 Windows 的连接，本站在 8000 端口提供 HTTP 服务。对照 5.7 的两级寻址：跨机器访问改的只是第一级（IP 从 `127.0.0.1` 换成 Kali 的私有 IP），路径 `/login`、`/register` 完全不变。
 
 若 NAT、防火墙或端口配置阻止了访问，可改用 Kali 浏览器完成截图，地址栏保留实际地址，并在 9.1 记录表写明原因。
@@ -972,7 +974,7 @@ ping -c 1 mysite.test
 | Kali 的 IP 地址 | `10.93.127.211`（`hostname -I` 输出；`ip -br addr` 显示在 `eth0` 上，网段 `/24`），另有 IPv6 地址 `240e:44d:1762:bbd9:.../64` |
 | 修改前的监听地址 | `127.0.0.1:8000`（`ss` 输出 `LISTEN 0 128 127.0.0.1:8000`，仅回环可达） |
 | 修改后的监听地址 | `0.0.0.0:8000`（`ss` 输出 `LISTEN 0 128 0.0.0.0:8000`，接受任意网卡） |
-| Windows 能否通过 Kali IP 访问；使用 Kali 浏览器代替时写明原因 | 能。Windows 侧执行 `curl http://10.93.127.211:8000/` 返回 `200`，`-d "username=alice&password=123456"` 访问 `/login` 返回 `200` 且响应头带 `Set-Cookie: user=alice; Path=/`，说明 8000 端口已对 `eth0` 开放。截图 `imgs/lab6_site.png` 取自 Kali 自带 Firefox 访问同一地址（`http://10.93.127.211:8000/login`），因为"登录成功"这一状态依赖浏览器内的 Cookie 交互，命令行只能验证可达性 |
+| Windows 能否通过 Kali IP 访问；使用 Kali 浏览器代替时写明原因 | 能。Windows 侧执行 `curl http://10.93.127.211:8000/` 返回 `200`，`-d "username=alice&password=123456"` 访问 `/login` 返回 `200` 且响应头带 `Set-Cookie: user=alice; Path=/`，说明 8000 端口已对 `eth0` 开放。截图 `imgs/lab6_site.png` 取自 Kali 自带 Firefox 访问 `http://127.0.0.1:8000/login`：讲义 8.3 允许用 Kali 浏览器代替，且"登录成功"这一状态依赖浏览器内的 Cookie 交互，命令行只能验证可达性 |
 | `notes.db` 完整路径 | `/home/kali/Lab6/site/notes.db`（与 `app.py` 同目录，由 `DB = os.path.join(BASE, "notes.db")` 决定） |
 | 两个测试用户名 | `alice`、`bob`（密码均为 `123456`） |
 | 数据库中的密码保存形式 | 明文。`SELECT id, username, password FROM users` 输出 `1\|alice\|123456`、`2\|bob\|123456`，密码未经哈希直接可读 |
