@@ -6,7 +6,7 @@ int main(void) {
     printf("Student ID: 2026010031\n");
 
     int number = 1024;
-    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 3，1};
+    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 3, 1};
 
     printf("number = %d\n", number);
     printf("Array ID: ");
