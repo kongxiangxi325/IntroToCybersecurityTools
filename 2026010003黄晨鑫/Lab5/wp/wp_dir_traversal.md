@@ -11,8 +11,8 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 环境地址 | （填写） |
-| Flag | （填写） |
+| 环境地址 | http://challenge-8c8d1f9367f74574.sandbox.ctfhub.com:10800 |
+| Flag | ctfhub{9f9b0d5163c7369f4d259c51} |
 
 ## 解题过程
 
