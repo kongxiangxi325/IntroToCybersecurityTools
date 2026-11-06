@@ -11,25 +11,25 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 环境地址 |  http://challenge-f10ee52bc24734e7.sandbox.ctfhub.com:10800|
-| Flag | （填写） |
+| 环境地址 | http://challenge-f10ee52bc24734e7.sandbox.ctfhub.com:10800 |
+| Flag | ctfhub{55f43d8bfd53fc712e1e3d6da} |
 
 ## 解题过程
 
-开启题目后页面明确写着 “HTTP Method is GET”，并提示要用 **CTFHUB** 这个方法去访问 `index.php`。浏览器地址栏只会发 GET，所以我在 Kali 终端里用 curl 自己指定方法：`curl -i -X CTFHUB <环境地址>/index.php`，请求行变成了 `CTFHUB /index.php HTTP/1.1`。响应里返回的不是 flag 本身而是一串 Base64（形如 `Y3RmaHVi...`），说明题目还多绕了一步，我用 `echo -n "那串字符" | base64 -d` 解码得到 `ctfhub{...}`。为验证，我也在 Burp Repeater 里把请求行第一个 GET 改成 CTFHUB 重放了一次，结果一致。
+开启题目后页面明确写着 “HTTP Method is GET”，并提示要用 **CTFHUB** 这个方法去访问 `index.php`。浏览器地址栏只会发 GET，所以我在 Kali 终端里用 curl 自己指定方法：`curl -i -X CTFHUB <环境地址>/index.php`，请求行变成了 `CTFHUB /index.php HTTP/1.1`。响应状态是 `HTTP/1.1 200 OK`，响应体里直接就是 `good job! ctfhub{55f43d8bfd53fc712e1e3d6da}`。为了确认“方法”确实是关键，我又用默认的 GET 访问了一次同一个地址，页面只回 `<p>HTTP Method is GET</p><p>Use CTF**B Method, I will give you flag.</p>` 和一句提示，看不到 flag——说明服务端是按请求行里的方法名分支处理的。截图用的是 curl -X CTFHUB 的全过程（模板允许在 Burp 不方便时用 curl 代替）。
 
 ## 关键请求/响应
 
 ```http
 CTFHUB /index.php HTTP/1.1
-Host: <环境地址的主机部分>
+Host: challenge-f10ee52bc24734e7.sandbox.ctfhub.com:10800
 User-Agent: curl/8.x
 Accept: */*
 
 HTTP/1.1 200 OK
 Content-Type: text/html; charset=UTF-8
 
-Y3RmaHVi...(Base64，解码后为 ctfhub{...})
+good job! ctfhub{55f43d8bfd53fc712e1e3d6da}
 ```
 
 ## 原理与复盘

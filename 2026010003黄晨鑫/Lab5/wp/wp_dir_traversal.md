@@ -16,18 +16,18 @@
 
 ## 解题过程
 
-开启题目后浏览器访问靶场地址，页面上直接是一个 “Index of /” 目录列表，把服务器上的目录和文件名都列了出来，说明这台服务器的目录浏览（autoindex）是开着的。我看到列表里有个 `flag_in_here/` 目录，点进去又是一层同样结构的目录列表，连续向下点了几层（每层只有子目录），最终在深层目录里看到 `flag.txt`。点开 `flag.txt`，页面直接返回 `ctfhub{...}`，回填到题目页提交后提示正确。整个过程没有改任何请求，只是不断修改 URL 里的路径。
+开启题目后浏览器访问靶场地址，页面上直接是一个 “Index of /” 目录列表，把服务器上的目录和文件名都列了出来，说明这台服务器的目录浏览（autoindex）是开着的。我看到列表里有个 `flag_in_here/` 目录，点进去又是一层同样结构的目录列表，连续向下点了几层（每层只有子目录），最终在深层目录里看到 `flag.txt`。点开 `flag.txt`，页面直接返回 `ctfhub{9f9b0d5163c7369f4d259c51}`，回填到题目页提交后提示正确。整个过程没有改任何请求，只是不断修改 URL 里的路径。
 
 ## 关键请求/响应
 
 ```http
-GET /flag_in_here/<子目录>/<子目录>/flag.txt HTTP/1.1
-Host: <环境地址的主机部分>
+GET /flag_in_here/4/4/flag.txt HTTP/1.1
+Host: challenge-8c8d1f9367f74574.sandbox.ctfhub.com:10800
 
 HTTP/1.1 200 OK
 Content-Type: text/plain
 
-ctfhub{...}
+ctfhub{9f9b0d5163c7369f4d259c51}
 ```
 
 （父目录的响应是目录列表页，`Content-Type: text/html`，响应体形如 `<title>Index of /flag_in_here</title>` + 若干 `<a href="...">`）

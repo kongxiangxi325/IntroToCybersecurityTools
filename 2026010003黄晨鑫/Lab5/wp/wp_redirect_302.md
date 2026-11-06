@@ -16,21 +16,21 @@
 
 ## 解题过程
 
-第一次用浏览器访问靶场，页面几乎瞬间就变成了另一个页面（`index.html`），只在 DevTools 的 Network 里能看到有两条请求，完全看不到“跳转”这件事本身。为了看原始报文，我在 Kali 终端用 `curl -i <环境地址>/`（故意不加 `-L`），这才看到第一条响应是 `HTTP/1.1 302 Found`，响应头里 `Location: index.html`，而**这个 302 响应自己的响应体里就写着 flag**——浏览器因为自动跟随跳转，从来没把它显示出来。把 flag 提交后提示正确。
+第一次用浏览器访问靶场，页面几乎瞬间就变成了另一个页面（`index.html`），只在 DevTools 的 Network 里能看到有两条请求，完全看不到“跳转”这件事本身。为了看原始报文，我在 Kali 终端用 `curl -i <环境地址>/`（故意不加 `-L`），这才看到第一条响应是 `HTTP/1.1 302 Found`，响应头里 `Location: /index.html`，而**这个 302 响应自己的响应体里就写着 flag**——浏览器因为自动跟随跳转，从来没把它显示出来。把 flag 提交后提示正确。
 
 ## 关键请求/响应
 
 ```http
 GET / HTTP/1.1
-Host: <环境地址的主机部分>
+Host: challenge-9fcb7a20ee333b61.sandbox.ctfhub.com:10800
 User-Agent: curl/8.x
 Accept: */*
 
 HTTP/1.1 302 Found
-Location: index.html
+Location: /index.html
 Content-Type: text/html; charset=UTF-8
 
-...(响应体里就是 flag) ctfhub{...}
+...(302 响应体里就是 flag) ctfhub{19b456c35e4eb9b4985e41dd}
 ```
 
 ## 原理与复盘

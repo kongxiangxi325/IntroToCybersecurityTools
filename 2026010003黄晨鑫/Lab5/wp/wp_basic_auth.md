@@ -11,32 +11,32 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 环境地址 |http://challenge-73bae8ef95df070b.sandbox.ctfhub.com:10800  |
-| Flag |ctfhub{48f20a06b0ebb675e0d622a5}  |
+| 环境地址 | http://challenge-73bae8ef95df070b.sandbox.ctfhub.com:10800 |
+| Flag | ctfhub{48f20a06b0ebb675e0d622a5} |
 
 ## 解题过程
 
-第一次访问靶场，浏览器直接弹出登录框，在终端 `curl -i <环境地址>/` 能看到 `HTTP/1.1 401 Unauthorized` 和 `WWW-Authenticate: Basic realm="..."`，说明这是 HTTP 基础认证，用户名就是提示里的 `admin`。题目页面下方提供了密码字典，我下载到 Kali 后，用 curl 循环把字典里每个密码都和 `admin` 组合发一次请求，每次只看返回码：401 是密码错，200 就是命中。找到正确密码后，用 `curl -i -u admin:<密码> <环境地址>/index.php` 正式访问，响应体里拿到 `ctfhub{...}`，提交后提示正确。之后我又把 `admin:<密码>` 做了一次 Base64 编码，和请求头里的值对比，确认完全一致，也验证了“Basic 认证就是把凭据 Base64 一下”。
+第一次访问靶场，浏览器直接弹出登录框，在终端 `curl -i <环境地址>/` 能看到 `HTTP/1.1 401 Unauthorized` 和 `WWW-Authenticate: Basic realm="..."`，说明这是 HTTP 基础认证，用户名就是提示里的 `admin`。题目页面下方提供了密码字典，我下载到 Kali 后，用 curl 循环把字典里每个密码都和 `admin` 组合发一次请求，每次只看返回码：401 是密码错，200 就是命中。找到正确密码后，用 `curl -i -u admin:tigger <环境地址>/flag.html` 正式访问，响应体里拿到 `ctfhub{48f20a06b0ebb675e0d622a5}`，提交后提示正确。之后我又把 `admin:tigger` 做了一次 Base64 编码，和请求头里的值对比，确认完全一致，也验证了“Basic 认证就是把凭据 Base64 一下”。
 
 ## 关键请求/响应
 
 ```http
 --- 1. 无凭据 ---
 GET / HTTP/1.1
-Host: <环境地址的主机部分>
+Host: challenge-73bae8ef95df070b.sandbox.ctfhub.com:10800
 
 HTTP/1.1 401 Unauthorized
 WWW-Authenticate: Basic realm="..."
 
 --- 2. 带正确凭据 ---
 GET /index.php HTTP/1.1
-Host: <环境地址的主机部分>
-Authorization: Basic <base64(admin:密码)>
+Host: challenge-73bae8ef95df070b.sandbox.ctfhub.com:10800
+Authorization: Basic YWRtaW46dGlnZ2Vy
 
 HTTP/1.1 200 OK
 Content-Type: text/html; charset=UTF-8
 
-...(页面内容) ctfhub{...}
+...(页面内容) ctfhub{48f20a06b0ebb675e0d622a5}
 ```
 
 ## 原理与复盘

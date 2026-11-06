@@ -16,18 +16,18 @@
 
 ## 解题过程
 
-开启题目后访问靶场地址，浏览器直接渲染出一个完整的 phpinfo 页面（蓝紫色表格，分 General、PHP Variables 等区块），没有任何登录或跳转。我先按 `Ctrl + F` 搜索 `flag`，页面里有一项字段名就叫 `flag`，值是 `ctfhub{...}`，直接就在页面上。除了 flag，页面还暴露了大量配置信息：PHP 版本号、`DOCUMENT_ROOT`（网站根目录的绝对路径）、`SERVER_SOFTWARE`（Web 服务器类型和版本）、以及环境变量和 `$_SERVER` 里的请求细节。把 flag 提交后提示正确。
+开启题目后访问靶场地址，浏览器直接渲染出一个完整的 phpinfo 页面（蓝紫色表格，分 General、PHP Variables 等区块），没有任何登录或跳转。我先按 `Ctrl + F` 搜索 `flag`，在环境变量区块里找到一行 `_ENV["FLAG"]`，值就是 `ctfhub{f1bf313c07cc34dd2e4f2862}`，直接就在页面上（用 `curl -s <环境地址>/phpinfo.php | grep -i ctfhub` 也能一行取到）。除了 flag，页面还暴露了大量配置信息：PHP 版本号、`DOCUMENT_ROOT`（网站根目录的绝对路径）、`SERVER_SOFTWARE`（Web 服务器类型和版本）、以及环境变量和 `$_SERVER` 里的请求细节。把 flag 提交后提示正确。
 
 ## 关键请求/响应
 
 ```http
 GET / HTTP/1.1
-Host: <环境地址的主机部分>
+Host: challenge-cf94b0707407cb8e.sandbox.ctfhub.com:10800
 
 HTTP/1.1 200 OK
 Content-Type: text/html; charset=UTF-8
 
-<tr><td class="e">flag</td><td class="v">ctfhub{...}</td></tr>
+<tr><td class="e">_ENV["FLAG"]</td><td class="v">ctfhub{f1bf313c07cc34dd2e4f2862}</td></tr>
 <tr><td class="e">PHP Version </td><td class="v">7.x.x</td></tr>
 <tr><td class="e">DOCUMENT_ROOT </td><td class="v">/var/www/html</td></tr>
 ```

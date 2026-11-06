@@ -180,12 +180,12 @@ Content-Type: text/html
 
 | 题目 | CTFHub 路径 | WP 文件 | Flag |
 | --- | --- | --- | --- |
-| 目录遍历 | 信息泄露 → 目录遍历 | [wp_dir_traversal.md](wp/wp_dir_traversal.md) | （填写） |
-| PHPINFO | 信息泄露 → PHPINFO | [wp_phpinfo.md](wp/wp_phpinfo.md) | （填写） |
-| 请求方式 | Web 前置技能 → HTTP 协议 → 请求方式 | [wp_http_method.md](wp/wp_http_method.md) | （填写） |
-| 302 跳转 | Web 前置技能 → HTTP 协议 → 302 跳转 | [wp_redirect_302.md](wp/wp_redirect_302.md) | （填写） |
-| Cookie | Web 前置技能 → HTTP 协议 → Cookie | [wp_cookie.md](wp/wp_cookie.md) | （填写） |
-| 基础认证 | Web 前置技能 → HTTP 协议 → 基础认证 | [wp_basic_auth.md](wp/wp_basic_auth.md) | （填写） |
+| 目录遍历 | 信息泄露 → 目录遍历 | [wp_dir_traversal.md](wp/wp_dir_traversal.md) | ctfhub{9f9b0d5163c7369f4d259c51} |
+| PHPINFO | 信息泄露 → PHPINFO | [wp_phpinfo.md](wp/wp_phpinfo.md) | ctfhub{f1bf313c07cc34dd2e4f2862} |
+| 请求方式 | Web 前置技能 → HTTP 协议 → 请求方式 | [wp_http_method.md](wp/wp_http_method.md) | ctfhub{55f43d8bfd53fc712e1e3d6da} |
+| 302 跳转 | Web 前置技能 → HTTP 协议 → 302 跳转 | [wp_redirect_302.md](wp/wp_redirect_302.md) | ctfhub{19b456c35e4eb9b4985e41dd} |
+| Cookie | Web 前置技能 → HTTP 协议 → Cookie | [wp_cookie.md](wp/wp_cookie.md) | ctfhub{c88e97b8e8e465d1dcac1d12} |
+| 基础认证 | Web 前置技能 → HTTP 协议 → 基础认证 | [wp_basic_auth.md](wp/wp_basic_auth.md) | ctfhub{48f20a06b0ebb675e0d622a5} |
 
 > 每道题的题目要求、提示、截图要求和写作提示都写在对应的 WP 模板里。**不要改动 WP 文件名和本表的链接**；如果某道题临时下线，按老师通知替换题目，并同步修改本表和对应 WP，不要删除整行。
 >
@@ -212,7 +212,7 @@ Content-Type: text/html
 
 用 3—5 句话回答：这 6 道题做完后，你对 HTTP 请求/响应的哪一部分印象最深？为什么？
 
-（待你做完后个性化修改）这 6 道题做完后，我对 HTTP 请求/响应的"请求头"这一部分印象最深：Cookie、Authorization、Location 这些头虽然只是报文里短短一行，却直接决定了服务器怎么处理这次请求——Cookie 题里改一个 `admin=0` 到 `admin=1` 就拿到了本不该有的权限，基础认证题里 Authorization 头只是 `用户名:密码` 的 Base64 编码，字典一跑就还原。其次是状态行：302 题让我意识到浏览器一直在替我"自动做决定"，不亲眼看一遍原始报文（`curl -i`）根本不知道跳转前的响应体里藏着什么。以后看 Web 问题不能再只看浏览器最终呈现的页面，要去看完整的请求和响应。
+这 6 道题做完后，我对 HTTP 请求/响应的"请求头"这一部分印象最深：Cookie、Authorization、Location 这些头虽然只是报文里短短一行，却直接决定了服务器怎么处理这次请求——Cookie 题里改一个 `admin=0` 到 `admin=1` 就拿到了本不该有的权限，基础认证题里 Authorization 头只是 `用户名:密码` 的 Base64 编码，字典一跑就还原。其次是状态行：302 题让我意识到浏览器一直在替我"自动做决定"，不亲眼看一遍原始报文（`curl -i`）根本不知道跳转前的响应体里藏着什么。以后看 Web 问题不能再只看浏览器最终呈现的页面，要去看完整的请求和响应。
 
 ---
 

