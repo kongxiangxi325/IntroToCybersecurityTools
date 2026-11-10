@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lab6 小站 - 登录</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="card">
+  <h1>Lab6 小站</h1>
+
+  <h2>登录</h2>
+  <form method="post" action="/login">
+    <label>用户名
+      <input type="text" name="username" autocomplete="off">
+    </label>
+    <label>密码
+      <input type="password" name="password">
+    </label>
+    <button type="submit">登录</button>
+  </form>
+
+  <h2>注册</h2>
+  <form method="post" action="/register">
+    <label>用户名
+      <input type="text" name="username" autocomplete="off">
+    </label>
+    <label>密码
+      <input type="password" name="password">
+    </label>
+    <button type="submit">注册</button>
+  </form>
+</main>
+<script>
+  var form = document.querySelector("form[action='/register']");
+  form.addEventListener("submit", function () {
+    var username = form.querySelector("[name='username']").value;
+    var password = form.querySelector("[name='password']").value;
+    alert("将发送到后端：username=" + username + "&password=" + password);
+  });
+</script>
+</body>
+</html>
