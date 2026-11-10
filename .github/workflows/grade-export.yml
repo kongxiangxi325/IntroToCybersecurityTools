@@ -1,0 +1,38 @@
+name: 成绩导出
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 只打印计划，不写 grades 分支
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  # 与成绩对账共用写入通道，串行执行。
+  group: grade-write-${{ github.repository }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 检出受信任的默认分支
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: 重建 reports 报表
+        # reports/ 全部由 receipts/ 生成，可以随时删除后重跑。
+        uses: LiuXiYing/course-pr-reviewer@27337bbae625c39ce40489c06bb48f13d53d16e9
+        with:
+          mode: grade-export
+          config-path: .github/course-review.yml
+          students-path: .github/students.yml
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: ${{ inputs.dry_run }}
