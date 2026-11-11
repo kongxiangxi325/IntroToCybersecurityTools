@@ -7,6 +7,10 @@ on:
         description: 只打印计划，不写 grades 分支
         required: false
         default: "false"
+      backfill:
+        description: 先补录上线前已合并的完成情况，再重建报表
+        required: false
+        default: "false"
 
 permissions:
   contents: write
@@ -20,18 +24,19 @@ concurrency:
 jobs:
   export:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: 检出受信任的默认分支
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
-      - name: 重建 reports 报表
-        # reports/ 全部由 receipts/ 生成，可以随时删除后重跑。
-        uses: LiuXiYing/course-pr-reviewer@27337bbae625c39ce40489c06bb48f13d53d16e9
+      - name: 补录历史完成情况并重建 reports
+        # backfill=true 时走补录模式：按默认分支上的 学号姓名/LabN/ 目录补 legacy 收据，
+        # 只记"完成"，不写分数；随后重建报表。同一输入重复执行是幂等的。
+        uses: LiuXiYing/course-pr-reviewer@09c91d918370af26a74903b91b0644ec3b5b03bf
         with:
-          mode: grade-export
+          mode: ${{ inputs.backfill == 'true' && 'grade-backfill' || 'grade-export' }}
           config-path: .github/course-review.yml
           students-path: .github/students.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}

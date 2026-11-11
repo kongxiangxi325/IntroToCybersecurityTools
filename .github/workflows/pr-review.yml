@@ -46,7 +46,7 @@ jobs:
 
       - name: 使用共享审核器审核并处理 PR
         # 固定完整 commit SHA：审核器升级时逐仓改这里，避免一次发版同时影响四门课。
-        uses: LiuXiYing/course-pr-reviewer@5af8fe81c1e00eb248256c2e2190487d01b2fe4c
+        uses: LiuXiYing/course-pr-reviewer@09c91d918370af26a74903b91b0644ec3b5b03bf
         with:
           config-path: .github/course-review.yml
           students-path: .github/students.yml
