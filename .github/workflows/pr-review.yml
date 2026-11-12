@@ -45,9 +45,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: 使用共享审核器审核并处理 PR
-        # 跟随审核器 main：审核器一发版，本课立即生效（与数据结构课一致）。
-        # 需要临时冻结某个版本时，把下面这行换成该版本的完整 SHA。
-        uses: LiuXiYing/course-pr-reviewer@main
+        # 固定完整 commit SHA：审核器升级时逐仓改这里，避免一次发版同时影响四门课。
+        uses: LiuXiYing/course-pr-reviewer@09c91d918370af26a74903b91b0644ec3b5b03bf
         with:
           config-path: .github/course-review.yml
           students-path: .github/students.yml
