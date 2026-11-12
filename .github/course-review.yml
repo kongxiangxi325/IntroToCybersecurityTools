@@ -2,6 +2,7 @@ version: 1
 
 course:
   name: 学科综合讲座
+  id: intro-to-cybersecurity-tools
   timezone: Asia/Shanghai
   title_template: "[{student_id}{student_name}]{assignment_id}作业提交"
   submission_path_template: "{student_id}{student_name}/{assignment_id}"
@@ -10,17 +11,48 @@ course:
 features:
   auto_merge: true
   comment_review: true
-  close_late_pr: true
+  close_late_pr: false
   ai_review: true
   ai_feedback: true
   ocr_review: false
   vision_review: true
   metrics: true
+  grading: true
 
 defaults:
   min_nonempty_lines: 10
   allow_extra_files: false
   late_close_after_days: 7
+
+# 迟交不再阻止合并，只影响成绩上限（详见 course-pr-reviewer README）。
+# 制度上线前已发布的作业标注 legacy：不扣分、不虚构分数；新作业标注 tiered。
+grading:
+  storage:
+    branch: grades
+    schema_version: 1
+    write_receipts: true
+    # 合并后不在审核任务里重建报表：一次重建要读几百份收据，会吃掉
+    # GITHUB_TOKEN 的每小时额度。交给每日 grade-reconcile 或手工 grade export。
+    export_on_finalize: false
+  policy_version: 2026-fall-v1
+  defaults:
+    max_points: "10.00"
+    legacy:
+      record_completion: true
+      fixed_points: null
+    tiered:
+      grace:
+        enabled: true
+        hours: 48
+        require_substantive_snapshot: true
+      bands:
+        - { max_late_hours: 0, cap_percent: 100 }
+        - { max_late_hours: 48, cap_percent: 90 }
+        - { max_late_hours: 168, cap_percent: 75 }
+        - { max_late_hours: 336, cap_percent: 60 }
+        - { max_late_hours: 672, cap_percent: 40 }
+        - { max_late_hours: null, cap_percent: 20 }
+      after_final_accept: reject_merge
 
 ai:
   providers:
@@ -71,6 +103,8 @@ assignments:
   Lab1:
     enabled: true
     deadline: "2026-10-17T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 10
     allow_extra_files: false
     report_template: homework/Lab1/Lab1.md
@@ -94,6 +128,8 @@ assignments:
   Lab2:
     enabled: true
     deadline: "2026-10-20T00:00:00+08:00"
+    grading:
+      mode: legacy
     # 报告行数由 template_metrics 检查，不给 index.html 另设行数门槛。
     min_nonempty_lines: 0
     allow_extra_files: false
@@ -130,6 +166,8 @@ assignments:
   Lab3:
     enabled: true
     deadline: "2026-10-24T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 10
     allow_extra_files: false
     report_template: homework/Lab3/Lab3.md
@@ -163,6 +201,8 @@ assignments:
   Lab4:
     enabled: true
     deadline: "2026-10-26T00:00:00+08:00"
+    grading:
+      mode: legacy
     # 行数与字符数量由 template_metrics 检查，与 Lab2、Lab3 相同口径
     min_nonempty_lines: 0
     allow_extra_files: false
@@ -204,6 +244,8 @@ assignments:
   Lab5:
     enabled: true
     deadline: "2026-10-31T00:00:00+08:00"
+    grading:
+      mode: legacy
     # 行数与字符数量由 template_metrics 检查，与 Lab2、Lab3、Lab4 相同口径
     min_nonempty_lines: 0
     # WP 中允许多放过程截图；required_files 仍必须齐全，额外图片不检查。
@@ -258,6 +300,8 @@ assignments:
   Lab6:
     enabled: true
     deadline: "2026-11-07T00:00:00+08:00"
+    grading:
+      mode: legacy
     # 行数与字符数量由 template_metrics 检查，与 Lab2—Lab5 相同口径
     min_nonempty_lines: 0
     # 讲义要求不提交 notes.db、__pycache__ 等运行产物；万一残留不因额外文件判不合格
@@ -307,6 +351,8 @@ assignments:
   Lab7:
     enabled: true
     deadline: "2026-11-14T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 0
     allow_extra_files: false
     report_template: homework/Lab7/Lab7.md
@@ -344,6 +390,8 @@ assignments:
   Lab8:
     enabled: true
     deadline: "2026-11-21T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 0
     allow_extra_files: false
     report_template: homework/Lab8/Lab8.md
@@ -382,6 +430,8 @@ assignments:
   Lab9:
     enabled: true
     deadline: "2026-11-28T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 0
     allow_extra_files: false
     report_template: homework/Lab9/Lab9.md
