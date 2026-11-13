@@ -7,9 +7,9 @@ int add(int x, int y) {
 
 int main(void) {
     /* 将两处示例学号替换为本人学号。 */
-    printf("Student ID: 2026010099\n");
+    printf("Student ID: 2026010031\n");
     int number = 7;
-    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 9, 9};
+    int student_id[10] = {2, 0, 2, 6, 0, 1, 0, 0, 3, 1};
 
     if (number >= 5) {
         printf("number >= 5\n");
