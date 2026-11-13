@@ -11,31 +11,37 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 环境地址 | http://challenge-6bc26fe97f5c64c4.sandbox.ctfhub.com:10800 |
-| Flag | ctfhub{6066757994b050d4c71bdfdd} |
+| 环境地址 | http://challenge-1bf5f8b447d58efd.sandbox.ctfhub.com:10800 |
+| Flag | ctfhub{8946ebdd2f92e9a2bc468551} |
 
 ## 解题过程
 
-第一次访问时，浏览器直接弹出了原生的用户名/密码对话框，而不是普通网页，这说明服务器返回了 401 Unauthorized，并在响应头里带了 WWW-Authenticate: Basic realm，要求用 Basic 方式证明身份。先随便填一组密码会被再次要求认证，只有在用户名和密码都正确时才会通过。认证通过后浏览器自动把 用户名:密码 拼起来做 Base64 编码，放进 Authorization 请求头重新发出，服务器校验成功返回 200，页面里就是 flag。
+打开题目首页，页面很简单，只有一句提示和一个指向 /flag.html 的链接。点这个链接时浏览器直接弹出原生的用户名密码对话框，说明服务器返回了 401，响应头里带着 WWW-Authenticate: Basic realm="Do u know admin ?"，没有登录就进不去。
+
+realm 里写了 admin，说明用户名就是 admin，接下来只剩密码。这种没有验证码、也没有次数限制的认证，最省事的办法就是拿常见弱口令挨个试。我在 Kali 里用 curl 带着 -u admin:密码 一条条发过去，看返回码从 401 变成 200 就是试对了；试到 iloveyou 时返回 200，页面正文里就是 flag。
+
+于是把 admin:iloveyou 按 用户名:密码 拼起来做 Base64，得到 YWRtaW46aWxvdmV5b3U=，再用 curl -v 发一次，请求头里能看到 Authorization: Basic 这一行，响应 200，正文返回 flag。
 
 ## 关键请求/响应
 
-认证成功后，浏览器自动加上的是 Basic 加空格再加 Base64(用户名:密码) 形式的请求头，这次请求拿到 200 和 flag。
-
 ```http
 GET /flag.html HTTP/1.1
-Host: challenge-6bc26fe97f5c64c4.sandbox.ctfhub.com:10800
-Authorization: Basic YWRtaW46PGNvcnJlY3QtcGFzc3dvcmQ+
+Host: challenge-1bf5f8b447d58efd.sandbox.ctfhub.com:10800
+Authorization: Basic YWRtaW46aWxvdmV5b3U=
+User-Agent: curl/8.20.0
 
 HTTP/1.1 200 OK
+Server: openresty/1.21.4.2
 Content-Type: text/html; charset=utf-8
 
-ctfhub{6066757994b050d4c71bdfdd}
+ctfhub{8946ebdd2f92e9a2bc468551}
 ```
 
 ## 原理与复盘
 
 Base64 不是加密，只是一种编码方式的转换，目的是把用户名和密码里可能出现的中文、冒号、特殊字符统统转成可以安全放进请求头的 ASCII 字符，任何人拿到都能原样解码回来。Authorization 请求头里实际放的就是 Basic 加一个空格再加 Base64(用户名:密码)，所以 Basic 认证本身不提供任何保密性，必须靠 HTTPS 传输才有意义。
+
+这道题真正暴露的问题是口令强度：admin 这种默认账号配上 iloveyou 这种字典里排得很靠前的密码，谁都能登进来，而且服务器连失败次数都不限制，等于把爆破的门槛降到零。实际部署里至少要换成强口令、限制失败次数，并且全程走 HTTPS。
 
 ---
 

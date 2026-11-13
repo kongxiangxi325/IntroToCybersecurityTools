@@ -185,7 +185,7 @@ Content-Type: text/html
 | 请求方式 | Web 前置技能 → HTTP 协议 → 请求方式 | [wp_http_method.md](wp/wp_http_method.md) | ctfhub{ed8a1c4fb19b8ed0a81c97f2} |
 | 302 跳转 | Web 前置技能 → HTTP 协议 → 302 跳转 | [wp_redirect_302.md](wp/wp_redirect_302.md) | ctfhub{2d990cef4cfa2281cf5379e8} |
 | Cookie | Web 前置技能 → HTTP 协议 → Cookie | [wp_cookie.md](wp/wp_cookie.md) | ctfhub{6066757994b050d4c71bdfdd} |
-| 基础认证 | Web 前置技能 → HTTP 协议 → 基础认证 | [wp_basic_auth.md](wp/wp_basic_auth.md) | ctfhub{6066757994b050d4c71bdfdd} |
+| 基础认证 | Web 前置技能 → HTTP 协议 → 基础认证 | [wp_basic_auth.md](wp/wp_basic_auth.md) | ctfhub{8946ebdd2f92e9a2bc468551} |
 
 > 每道题的题目要求、提示、截图要求和写作提示都写在对应的 WP 模板里。**不要改动 WP 文件名和本表的链接**；如果某道题临时下线，按老师通知替换题目，并同步修改本表和对应 WP，不要删除整行。
 >
@@ -212,7 +212,7 @@ Content-Type: text/html
 
 用 3—5 句话回答：这 6 道题做完后，你对 HTTP 请求/响应的哪一部分印象最深？为什么？
 
-我对基础认证这一方面印象最深，因为这个东西用了密码爆破我们无法解决，我们只能用AI来进行智取，然后在AI协助下，成功解决这个问题
+我对基础认证这一方面印象最深，因为这个东西没有验证码也没有账号锁定，只要把常见弱口令挨个试一遍就能登进去，最后密码就是 iloveyou 这种字典里排得很靠前的词，说明只靠 Basic 认证保护是不够的
 
 ---
 
