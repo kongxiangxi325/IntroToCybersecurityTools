@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lab6 小站 - 操作失败</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="card">
+  <h1>操作失败</h1>
+  <p class="tip">页面只给出通用提示。具体原因可以通过 HTTP 状态码和 app.py 中的分支确认。</p>
+
+  <table>
+    <thead>
+      <tr><th>状态码</th><th>原因</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>400</td><td>用户名或密码为空</td></tr>
+      <tr><td>401</td><td>用户名或密码不正确</td></tr>
+      <tr><td>409</td><td>用户名已经存在</td></tr>
+    </tbody>
+  </table>
+
+  <p class="foot"><a href="/">返回登录页</a></p>
+</main>
+</body>
+</html>

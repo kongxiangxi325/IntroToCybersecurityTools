@@ -1,0 +1,51 @@
+name: 成绩对账
+
+on:
+  schedule:
+    # 每天北京时间 04:17，与 PR 审核错峰。
+    - cron: "17 20 * * *"
+  workflow_dispatch:
+    inputs:
+      since:
+        description: 只处理该时间之后提交的记录（ISO 8601，可留空）
+        required: false
+      only_pr:
+        description: 只处理这个 PR 编号
+        required: false
+      dry_run:
+        description: 只打印计划，不写 grades 分支
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  # 与成绩导出共用写入通道：同一仓库的成绩写入必须串行，否则两个工作流
+  # 会在同一个 Git ref 上相互冲突。
+  group: grade-write-${{ github.repository }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出受信任的默认分支
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: 补写中断的成绩记录
+        # 只读 PR 合并事实与 grades 分支，绝不合并、绝不重新审核。
+        uses: LiuXiYing/course-pr-reviewer@27337bbae625c39ce40489c06bb48f13d53d16e9
+        with:
+          mode: grade-reconcile
+          config-path: .github/course-review.yml
+          students-path: .github/students.yml
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          since: ${{ inputs.since }}
+          only-pr: ${{ inputs.only_pr }}
+          dry-run: ${{ inputs.dry_run }}

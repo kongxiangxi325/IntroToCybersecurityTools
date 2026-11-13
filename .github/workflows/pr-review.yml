@@ -45,7 +45,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: 使用共享审核器审核并处理 PR
-        uses: LiuXiYing/course-pr-reviewer@ca0ca30826f6b8c4b06b0417c02885bbcf91d947 # v0.11.0：支持新作业模板行数与字符数量检查
+        # 固定完整 commit SHA：审核器升级时逐仓改这里，避免一次发版同时影响四门课。
+        uses: LiuXiYing/course-pr-reviewer@09c91d918370af26a74903b91b0644ec3b5b03bf
         with:
           config-path: .github/course-review.yml
           students-path: .github/students.yml

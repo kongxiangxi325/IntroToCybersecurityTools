@@ -2,6 +2,7 @@ version: 1
 
 course:
   name: 学科综合讲座
+  id: intro-to-cybersecurity-tools
   timezone: Asia/Shanghai
   title_template: "[{student_id}{student_name}]{assignment_id}作业提交"
   submission_path_template: "{student_id}{student_name}/{assignment_id}"
@@ -10,17 +11,48 @@ course:
 features:
   auto_merge: true
   comment_review: true
-  close_late_pr: true
+  close_late_pr: false
   ai_review: true
   ai_feedback: true
   ocr_review: false
   vision_review: true
   metrics: true
+  grading: true
 
 defaults:
   min_nonempty_lines: 10
   allow_extra_files: false
   late_close_after_days: 7
+
+# 迟交不再阻止合并，只影响成绩上限（详见 course-pr-reviewer README）。
+# 制度上线前已发布的作业标注 legacy：不扣分、不虚构分数；新作业标注 tiered。
+grading:
+  storage:
+    branch: grades
+    schema_version: 1
+    write_receipts: true
+    # 合并后不在审核任务里重建报表：一次重建要读几百份收据，会吃掉
+    # GITHUB_TOKEN 的每小时额度。交给每日 grade-reconcile 或手工 grade export。
+    export_on_finalize: false
+  policy_version: 2026-fall-v1
+  defaults:
+    max_points: "10.00"
+    legacy:
+      record_completion: true
+      fixed_points: null
+    tiered:
+      grace:
+        enabled: true
+        hours: 48
+        require_substantive_snapshot: true
+      bands:
+        - { max_late_hours: 0, cap_percent: 100 }
+        - { max_late_hours: 48, cap_percent: 90 }
+        - { max_late_hours: 168, cap_percent: 75 }
+        - { max_late_hours: 336, cap_percent: 60 }
+        - { max_late_hours: 672, cap_percent: 40 }
+        - { max_late_hours: null, cap_percent: 20 }
+      after_final_accept: reject_merge
 
 ai:
   providers:
@@ -71,6 +103,8 @@ assignments:
   Lab1:
     enabled: true
     deadline: "2026-10-17T00:00:00+08:00"
+    grading:
+      mode: legacy
     min_nonempty_lines: 10
     allow_extra_files: false
     report_template: homework/Lab1/Lab1.md
@@ -94,6 +128,8 @@ assignments:
   Lab2:
     enabled: true
     deadline: "2026-10-20T00:00:00+08:00"
+    grading:
+      mode: legacy
     # 报告行数由 template_metrics 检查，不给 index.html 另设行数门槛。
     min_nonempty_lines: 0
     allow_extra_files: false
@@ -103,7 +139,7 @@ assignments:
       - index.html
       - imgs/workbuddy_web.png
       - imgs/claude_code_hello.png
-    # 仅对新发布的 Lab2 启用模板数量检查，Lab1 保持原有审核规则。
+    # Lab2 及以后的作业均启用模板行数与字符数量检查，Lab1 保持原有审核规则。
     template_metrics:
       enabled: true
       report_file: Lab2.md
@@ -127,3 +163,312 @@ assignments:
       - claude_code_hello.png 应能辨认 Claude Code 终端界面、本人发送的问候语请求和模型已经返回的“你好，本人10位学号姓名”。学号姓名须与本次 PR 登记身份及报告一致；接受中文或英文逗号、合理空格等差异。只有输入提示词而无模型回复、回复仍含占位符、输出报错，或用 echo、print 冒充回复，均不算完成。
       - 本次使用 Claude Code 客户端连接 DeepSeek API，不要求 Claude 官方订阅或 Claude 官方模型名称。无需另交版本、安装、CC Switch 配置、DeepSeek 充值、余额或密钥截图；不要仅因终端未显示供应商或模型名称而判为未完成。
       - 两张截图必须来自本人电脑的实际操作，网页截图的公网地址与页面内容、Claude Code 截图中的问候语清晰可读。允许合理裁剪无关区域及不同界面语言和主题，但网页截图必须保留地址栏；不得使用手机拍屏，不得出现 API Key、密码或支付敏感信息。关键内容被裁掉、无法辨认或与报告明显矛盾时应指出。
+  Lab3:
+    enabled: true
+    deadline: "2026-10-24T00:00:00+08:00"
+    grading:
+      mode: legacy
+    min_nonempty_lines: 10
+    allow_extra_files: false
+    report_template: homework/Lab3/Lab3.md
+    required_files:
+      - Lab3.md
+      - imgs/lab3_network.png
+      - imgs/lab3_resources.png
+      - imgs/lab3_mobaxterm.png
+      - imgs/lab3_vscode_remote.png
+    template_metrics:
+      enabled: true
+      report_file: Lab3.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab3_network.png
+      - imgs/lab3_resources.png
+      - imgs/lab3_mobaxterm.png
+      - imgs/lab3_vscode_remote.png
+    review_points:
+      - Lab3.md 必须完整保留老师发布的模板，只能替换各验收表格（联网、资源、MobaXterm、VSCode Remote-SSH）第二列中的填写提示和环境验收总结的结论列，不得删除、改写或调整其他标题、说明、表格行、图片引用和小节。总行数、非空行数和六类 Markdown 字符数量由程序检查；数量达标不能代替实际内容审核。
+      - 各验收表格的填写列应全部填写，不能留空或保留填写提示；虚拟机 IP、CPU 核心数、内存、虚磁盘容量、远程终端 whoami 输出、SSH 主机别名等应与截图内容对应，明显矛盾时判为未完成。
+      - 环境验收总结下方的简要说明应填写本人遇到的问题、解决方法或明确说明无问题，不能保留“填写”提示。
+      - 本次只提交 Lab3.md 和 4 张指定截图，不要求提交 hello.txt、配置文件或其他任何文件；软件源用官方源或国内镜像站均可，不得因 Get 行来源判为不合格。
+    vision_review_points:
+      - lab3_network.png 应清晰显示 hostname -I、ip route、ping -c 4 223.5.5.5、ping -c 4 mirrors.tuna.tsinghua.edu.cn 和 sudo apt update 各命令及其输出，命令与输出应能对应；有私有 IP 和 default via 默认路由、两个 ping 有返回、apt update 无 Err/Failed 即算成功。所在网络禁 ping 时，以 apt update 成功输出作为联网证据不算拒绝理由。
+      - lab3_resources.png 应清晰显示 nproc、free -h、lsblk、df -h / 各命令及其输出；CPU 核心数不低于 2、内存不低于 3GB、虚磁盘不小于 40GB 即算达标，显示值略小于 VMware 设置值属正常现象。
+      - lab3_mobaxterm.png 应能辨认 MobaXterm 的 SSH 会话窗口（左侧会话栏或远程终端），远程终端为 Linux 提示符并显示 whoami、hostname、hostname -I 的输出；whoami 输出应与报告填写一致。用 Windows 本地 PowerShell/CMD 冒充远程终端、只有连接界面无命令输出均不算完成。
+      - lab3_vscode_remote.png 应能辨认 VSCode 窗口左下角的 SSH 远程标识（如 SSH：kali-oslab），已打开远程文件夹，集成终端中有 uname -a 输出的 Linux 内核信息；报告填写的主机别名应与图中一致。
+      - 截图必须来自学生本人的 Kali 虚拟机，两张远程连接截图中的 IP 与报告填写的 IP 一致或为同一虚拟机的合理变化；必须由电脑截图功能生成，出现手机拍屏反光、倾斜或关键文字无法辨认时判为不合格。
+  Lab4:
+    enabled: true
+    deadline: "2026-10-26T00:00:00+08:00"
+    grading:
+      mode: legacy
+    # 行数与字符数量由 template_metrics 检查，与 Lab2、Lab3 相同口径
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab4/Lab4.md
+    required_files:
+      - Lab4.md
+      - imgs/lab4_email.png
+      - imgs/lab4_homepage.png
+      - imgs/lab4_tools.png
+      - imgs/lab4_typingclub_233.png
+    template_metrics:
+      enabled: true
+      report_file: Lab4.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab4_email.png
+      - imgs/lab4_homepage.png
+      - imgs/lab4_tools.png
+      - imgs/lab4_typingclub_233.png
+    review_points:
+      - Lab4.md 必须完整保留老师发布的模板，只能替换各表格中的填写提示，不得删除、改写或调整其他标题、说明、表格行、图片引用和小节。总行数、非空行数和六类 Markdown 字符数量由程序检查；数量达标不能代替实际内容审核。
+      - 文本审核按最宽口径执行：只检查各填写栏是否已如实填写，不留空、不保留“（填写）”等填写提示即可；不核对答案的正确性、深度或完整度，填写内容与标准答案、教师示例或模板说明文字不一致、表述简短或口语化均不判不合格，存在疑点或拿不准时一律按完成处理。
+      - 软件清单表格的每一格都必须填写，不得留空或保留填写提示；“是否安装”列填“已安装”或“未安装”均可，试用记录如实写一句话或填“未安装”即可；不要求实际安装任何软件，不设置最低安装数量，不要求 Everything、Geek Uninstaller、WizTree 三款已安装，也不要求软件必须来自推荐清单，不得因未安装或安装数量少判未完成。
+      - 2.3 节的平铺截图在文本阶段只核对 imgs/lab4_tools.png 的文件名与图片引用是否正确；三个窗口是否平铺、软件是否实际运行由图片阶段核对，文本阶段不要因看不到截图内容判未完成。
+      - 快捷键、解压缩、邮件、开机启动项管理、油猴脚本与 Edge 插件各表格的填写栏均不得留空或保留填写提示；快捷键含义按自己理解填写即可，不逐行核对标准答案；解压缩数据以本人实际结果为准，具体数值和写法不作要求；邮件主题不得留空，附件栏如实填写，正文不得涉及违规违法信息；启动项管理填“无”或简短说明保留原因均算完成；4.4 节不设填写表格，不得因该节没有填写内容判未完成。文本审核不要求联网验证邮件、脚本或插件是否真实安装。
+      - 浏览器主页与搜索引擎一节的填写栏不得留空或保留填写提示，按本人实际设置如实填写即可；地址为 bing.com、cn.bing.com 或 bing.cn 均可，关闭的推广内容写大意或简单说明均可，与模板文字略有出入不判不合格；未安装 Chrome 的两栏填“未安装”即算完成，不得因此判未完成。文本审核不要求实际检查浏览器设置。
+      - 4.6 的主页截图在文本阶段只核对 imgs/lab4_homepage.png 的文件名与图片引用是否正确；主页是否真的改为 Bing 由图片阶段核对，文本阶段不要因看不到截图内容判未完成。
+      - 卸载第三方杀毒软件一节为建议内容，卸载与否不作要求，填写栏填“无”或“保留”加一句原因均算完成，不得因未卸载第三方杀毒判未完成；基本正确风格一节的自查表如实填写即可，填“未做到”不影响完成，不得据此判未完成。
+      - 教育账号一节的填写栏不得留空；两个申请填“已通过”“审核中”或“失败”加一句说明均算完成，不得因审核未通过判未完成；文本审核不要求联网验证账号状态，不得要求学生提交账号截图或填写账号密码。
+      - 本次只提交 Lab4.md 和四张指定截图，不要求提交安装包、脚本文件、压缩包或其他任何文件。
+    vision_review_points:
+      - 图片审核按最宽口径执行：只核对每张截图是否具备作业要求的最低完成标志，对清晰度、分辨率、图片大小、排版、窗口大小与位置、界面语言与主题、浏览器与软件版本差异、桌面背景与图标、截图范围和裁剪程度等细节一律不作要求；不得以美观、完整度或与教师示例不一致为由判不合格；存在疑点或拿不准时一律按完成处理。
+      - lab4_homepage.png 只要能确认打开的是 Bing 页面（Bing 主页或 Bing 搜索结果页均可）即算完成；地址栏显示 bing.com、cn.bing.com、global.bing.com 或经跳转的任一 Bing 域名均正常，地址栏被裁掉、被遮挡或看不全不影响完成；不要求浏览器必须是 Edge，其他浏览器同样接受；Bing 自带的背景图、每日图片、天气、资讯卡片等官方内容不算推广，带有此类内容不判不合格；仅当页面明显是导航站、百度等其他搜索引擎、与 Bing 完全无关或明显用网络图片代替时判不合格。
+      - lab4_tools.png 只要同一张图片中能辨认出 Everything、Geek Uninstaller、WizTree 三个软件的运行窗口即算完成：窗口大小、排列方式、层级、重叠与遮挡均不限，每个软件通过标题栏、名称、图标或界面特征中任一项能辨认即可；对三个软件的具体使用状态不作要求，不必核对是否搜索、是否列出软件或是否完成扫描；实际截图与拼图均可接受；不因桌面是否整洁、图标多少、壁纸样式、分辨率低或窗口未铺满屏幕判不合格；仅当缺少任一软件窗口、任一软件完全无法辨认或明显用官网宣传图、网络图片等非本人电脑画面代替时判不合格。
+      - lab4_typingclub_233.png 只要能辨认 TypingClub 关卡页面中编号 233 的关卡，且该关卡卡片上能看到至少一颗已获得的星星（点亮或部分点亮均可）即算完成；不要求完整卡片或保留周围区域，不要求满星，也不核对其他关卡；界面改版、显示语言、缩放比例与清晰度差异均不判不合格；仅当看不到编号 233、该关没有任何已获得的星星或截图与 TypingClub 无关时判不合格。
+      - lab4_email.png 只要能显示一封与本次作业对应的邮件并同时能看到主题、正文和附件标记（附件名称、附件图标或回形针标记任一项均可）即算完成；已发送列表、邮件详情页或收件箱中的同一封邮件均可；邮箱客户端与界面样式不限；主题为 Lab4-学号-姓名，仅大小写、空格或连字符等微小差异均正常；收件人以及正文中隐私相关的局部内容打码不影响完成；不因截图范围或清晰度差异判不合格；仅当看不到主题或正文、完全没有附件标记、明显不是本人邮件（如网络图片）或主题与正文出现明显违规违法内容、账号密码等敏感隐私时判不合格。
+      - 四张截图接受桌面截图、浏览器截取、全屏截图等任何形式；存在轻微反光、摩尔纹、倾斜、模糊或压缩痕迹但关键信息（Bing 页面、三款软件名称、编号 233 与星标、邮件主题正文附件）仍可辨认时不得判不合格，也不因疑似拍屏本身拒绝；画面中出现与作业无关的通知、窗口、水印或打码内容均不影响完成；只有关键信息无法确认时才按不合格处理，其余任何情况一律按完成处理。
+  Lab5:
+    enabled: true
+    deadline: "2026-10-31T00:00:00+08:00"
+    grading:
+      mode: legacy
+    # 行数与字符数量由 template_metrics 检查，与 Lab2、Lab3、Lab4 相同口径
+    min_nonempty_lines: 0
+    # WP 中允许多放过程截图；required_files 仍必须齐全，额外图片不检查。
+    allow_extra_files: true
+    report_template: homework/Lab5/Lab5.md
+    required_files:
+      - Lab5.md
+      - wp/wp_dir_traversal.md
+      - wp/wp_phpinfo.md
+      - wp/wp_http_method.md
+      - wp/wp_redirect_302.md
+      - wp/wp_cookie.md
+      - wp/wp_basic_auth.md
+      - imgs/lab5_dir_traversal.png
+      - imgs/lab5_phpinfo.png
+      - imgs/lab5_http_method.png
+      - imgs/lab5_redirect_302.png
+      - imgs/lab5_cookie.png
+      - imgs/lab5_basic_auth.png
+    template_metrics:
+      enabled: true
+      report_file: Lab5.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab5_dir_traversal.png
+      - imgs/lab5_phpinfo.png
+      - imgs/lab5_http_method.png
+      - imgs/lab5_redirect_302.png
+      - imgs/lab5_cookie.png
+      - imgs/lab5_basic_auth.png
+    review_points:
+      - Lab5.md 和 6 份 WP 必须完整保留老师发布的模板，只能替换模板中标出的填写/写作提示（如“（填写）”“（粘贴…）”“（写清楚…）”），并可在 WP 中按需增加过程截图；不得删除、改写或调整其他标题、说明、题目、表格、指定图片引用和小节。Lab5.md 的总行数、非空行数和六类 Markdown 字符数量由程序检查；WP 文件的结构由文本审核检查；数量达标不能代替实际内容审核。
+      - Lab5.md 第四节的必做题总表 6 行必须填写完整：WP 链接不能改动，Flag 列应为完整的 ctfhub{...} 形式，不能留空或保留“（填写）”；第五节知识地图 6 行和 5.1 总结必须填写；选做题表格填“完成”或“未做”均可。
+      - 6 份 WP 必须按 wp_dir_traversal.md、wp_phpinfo.md、wp_http_method.md、wp_redirect_302.md、wp_cookie.md、wp_basic_auth.md 的文件名完整提交，每份都要有“题目信息、解题过程、关键请求/响应、原理与复盘”四部分和对应的截图引用；文件名或目录名大小写错误、缺少任意一份 WP，都按未完成处理。
+      - 每份 WP 的题目信息表必须填写环境地址和 Flag，不能留空或保留“（填写）”；环境地址应为 http 或 https 的 CTFHub 靶场地址，不能是 file、localhost、127.0.0.1 或纯文本“已开启”。解题过程至少 3—5 句，能看出“看到什么—做了什么—结果是什么”；关键请求/响应要粘贴真实内容，或在确实不需要改请求的题目（目录遍历、PHPINFO）写“本题不需要修改请求”；原理与复盘至少 2—3 句。表述简短、口语化、步骤不够详细均不判不合格。
+      - 4.3 请求方式 WP 的关键请求/响应必须能看到修改后的请求行和方法；只有浏览器普通 GET、没有方法修改证据的不算完成。4.4 302 跳转 WP 和截图必须有 302 状态码或 Location 证据；4.5 Cookie WP 和截图必须有修改后的 Cookie 请求头；4.6 基础认证 WP 和截图必须有 Authorization 或 Basic 认证证据。其他题允许使用浏览器 DevTools、curl 或 Burp。
+      - 文本审核不要求联网验证 flag 是否真实正确，也不要求访问 CTFHub 靶场；flag 形式、过程描述和截图由图片阶段综合核对。CTFHub 题目名称、界面或技能树位置改版时，不因与模板文字略有差异判不合格。只有 WP 整篇为空、只有 flag 或占位提示、或者明显整段照抄网络 writeup 且没有任何自己的操作描述时，才按不合格处理。
+      - 本次必须提交 Lab5.md、6 份 WP 和 6 张指定截图这 13 个文件；允许 WP 中多放过程截图（例如多步操作、多个 payload、失败尝试），额外图片不列入检查，也不因额外图片判不合格；6 张指定截图仍必须齐全并按要求检查。不要求提交 Burp 工程、pcap、脚本、工具、压缩包等无关文件。
+      - 报告中不得出现 CTFHub 账号密码、平台登录 Cookie、身份证号等敏感信息；flag 和题目靶场地址可以写。若截图中意外出现平台登录 Cookie，应打码或重新截图，不能因此直接判不合格。
+      - CTFHub、curl、Burp 应在 Kali 中操作；报告和 Git/PR 在 Windows 上完成。截图可以用 Windows 截图工具截取 Kali 窗口，也可以在 Kali 中截图后传到 Windows；截图内容必须来自 Kali 中的题目画面。不要求检查学生实际使用了哪个操作系统，但截图中不应出现明显在 Windows 浏览器里重新做题、用手机拍屏或网络图片冒充的情况。
+    vision_review_points:
+      - 图片审核按较宽口径执行：只核对每张截图是否具备本题的最低完成标志，对清晰度、分辨率、图片大小、排版、窗口大小与位置、界面语言与主题、浏览器与 Burp 版本差异、截图范围和裁剪程度等细节不作要求；不得以美观、完整度或与教师示例不一致为由判不合格；存在疑点或拿不准时按完成处理。
+      - lab5_dir_traversal.png 应能看出题目环境中的目录/路径访问和 flag，或能看出目录列表与最终 flag 的对应关系；接受浏览器地址栏、目录列表、文件内容和 Burp/curl 响应等任意形式；不要求特定的目录名或点击顺序。
+      - lab5_phpinfo.png 应能看出 phpinfo 页面和 flag，或能看出在 phpinfo 页面中定位 flag 的过程；接受浏览器查找高亮、页面截图和终端 curl 输出；不要求页面中的所有配置项都清晰。
+      - lab5_http_method.png 应能看出请求方法被修改（不是普通 GET 首页访问）以及服务器返回的 flag 或成功结果；Burp Repeater 的请求行、curl -X 的命令与输出、或等价的请求重放界面均可接受；只有浏览器最终页面、没有方法证据的，不算完成。
+      - lab5_redirect_302.png 应能看出 302 状态码或 Location 响应头，以及最终 flag 或成功结果；DevTools Network、Burp 响应、curl -i 输出均可接受；只有最终页面、没有 302 证据的，不算完成。
+      - lab5_cookie.png 应能看出 Cookie 请求头被修改以及服务器返回的 flag 或成功结果；DevTools、Burp、curl -b 均可接受；只有登录页面或最终页面、没有 Cookie 修改证据的，不算完成。
+      - lab5_basic_auth.png 应能看出 Authorization：Basic 请求头或 Basic 认证过程，以及认证成功后的 flag 或页面；Burp、curl -u、浏览器认证弹窗均可接受；只有最终页面、没有认证证据的，不算完成。
+      - 6 张截图应来自学生本人操作，能看出 CTFHub 题目环境或题目名称；允许使用 Windows 截图工具截取的 Kali 虚拟机窗口、Kali 桌面截图、浏览器截图或 Burp 窗口截图，不要求显示完整地址栏。出现手机拍屏反光、摩尔纹、明显倾斜或关键文字无法辨认时判为不合格；普通截图缩放、窗口遮挡、界面语言不同不影响完成。
+      - 截图中的 flag 可以是 ctfhub{...} 原文，也可以是平台提交成功的明确提示；报告中的 flag 应与截图或题目对应。CTFHub 页面改版、题目名称略有差异、靶场地址端口不同均属正常，不因此判不合格。
+  Lab6:
+    enabled: true
+    deadline: "2026-11-07T00:00:00+08:00"
+    grading:
+      mode: legacy
+    # 行数与字符数量由 template_metrics 检查，与 Lab2—Lab5 相同口径
+    min_nonempty_lines: 0
+    # 讲义要求不提交 notes.db、__pycache__ 等运行产物；万一残留不因额外文件判不合格
+    allow_extra_files: true
+    report_template: homework/Lab6/Lab6.md
+    required_files:
+      - Lab6.md
+      - site/app.py
+      - site/pages/login.html
+      - site/pages/home.html
+      - site/pages/retry.html
+      - site/static/style.css
+      - imgs/lab6_site.png
+      - imgs/lab6_listen.png
+      - imgs/lab6_db.png
+      - imgs/lab6_dns.png
+    template_metrics:
+      enabled: true
+      report_file: Lab6.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab6_site.png
+      - imgs/lab6_listen.png
+      - imgs/lab6_db.png
+      - imgs/lab6_dns.png
+    review_points:
+      - Lab6.md 必须完整保留老师发布的模板，只能替换表格和思考题中的填写提示；不得删除、改写或调整其他标题、说明、表格行、图片引用和小节。总行数、非空行数和六类 Markdown 字符数量由程序检查；数量达标不能代替实际内容审核。
+      - site/ 下的 5 个源码文件必须齐全：app.py、pages/login.html、pages/home.html、pages/retry.html、static/style.css。文件名或目录名大小写错误、缺少任意一个，都按未完成处理。
+      - app.py 必须是可运行的 Flask 程序，注册、登录路由内至少各有一处 sqlite3 操作（INSERT、SELECT 均可），且保留从 Cookie 读用户名并返回 JSON 的 /me 路由。把后端掏空成只返回静态文字、删掉数据库操作、或整份文件换成本地静态 HTML 的，按未完成处理。允许学生把监听地址改成本机 IP 或 0.0.0.0、把端口改成 8000 以外的值，不因这两处与模板不同判不合格。
+      - 模板里预留了七处 TODO（TODO 1 注册表单、TODO 2 提交事件 JS、TODO 3 /login 路由声明、TODO 4 读取 password 字段、TODO 5 /register 路由声明、TODO 6 成功页查询面板、TODO 7 /me 接口），学生必须把七处都补掉，site/ 下不能残留 TODO 注释（在 site/ 下执行 grep -rn TODO 应无输出）。只补了一部分、或把 TODO 注释删掉却没写内容，按未完成处理。
+      - TODO 验收标准：login.html 里要有两个 form，一个 method 为 post 且提交到 /login，一个提交到 /register，输入框 name 为 username 和 password；script 内要有对注册表单的 addEventListener("submit", ...) 监听和 alert 调用，alert 内容能看出要发送的用户名密码即可，不要求与讲义逐字一致；app.py 中 login() 上方要有 @app.route("/login", methods=["POST"])、register() 上方要有 @app.route("/register", methods=["POST"])，均顶格且在 def 上一行；login() 内要有读取 password 字段的语句（默认值为空字符串，不要求 strip 与否与讲义一致）；me() 内要有读取 Cookie 的 user 值并 return jsonify(...) 的两行；home.html 中要出现指向 /me 的地址（放在 pre 或普通文本中均可）。缩进错误导致 500 不单独判不合格，以代码意图判断。
+      - pages 下的 HTML 是纯静态页面，应当没有任何模板占位符（例如花括号或美元符号变量）。允许学生调整样式和文案，不因颜色、字号、排版与模板不同判不合格；不要求保留退出登录链接或任何特定文案。
+      - 报告中 9.1 观察记录表 15 行必须填写，不能留空或保留“（填写）”“（粘贴原文）”；9.2 六道知识问答都要回答，每题至少两句，能对应到 app.py 中的具体代码或命令的实际输出。表述口语化、句子简短、步骤描述不细致均不判不合格。
+      - 9.1 中“数据库中的密码保存形式”一行为明文，属于本次作业的预期结果，不得据此要求整改或判不合格；同样不得因学生使用 123456、abc123 这类示例密码判不合格。监听地址改为 0.0.0.0、无法从 Windows 访问而在 9.1 写明改用 Kali 浏览器原因的，按完成处理。
+      - 报告或代码中不得出现把本站部署到公网的行为、说明或公网访问链接；出现公网地址按不合格处理。不得出现学生本人真实在用的密码。
+      - 文本审核不要求联网访问学生的站点，也不要求复现其命令输出；表格内容与截图之间的差异由图片阶段综合核对。只有报告整篇为空、只有占位提示、或代码文件缺失时，才按不合格处理。不要求提交运行日志、虚拟环境、数据库文件或额外说明文档。
+      - 观察请求与响应的方式以讲义的 F12 开发者工具为准，学生改用 curl、Burp 等等价方式观察的，不因观察手段与讲义不同判不合格；hosts 域名、测试用户名与讲义示例（alice、bob、mysite.test）不同但流程完整的，按完成处理。允许 notes.db 和 __pycache__ 残留在提交目录中，这些运行产物不影响完成判定。
+    vision_review_points:
+      - 图片审核按较宽口径执行：只核对每张截图是否具备本节的最低完成标志，对清晰度、分辨率、图片大小、排版、窗口大小与位置、界面语言与主题、浏览器与终端版本差异、截图范围和裁剪程度等细节不作要求；不得以美观或与教师示例不一致为由判不合格；存在疑点或拿不准时按完成处理。
+      - lab6_listen.png 应能看出在终端里查看 8000 端口的监听状态，能看到含 8000 的一行和 ss 命令本身；监听地址显示 127.0.0.1（修改前）或 0.0.0.0（修改后）均可接受，讲义建议修改前后放在同一张图里，只有一张的按完成处理。只有命令本身、没有任何端口监听输出的，不算完成。
+      - lab6_db.png 应能看出 users 表中的注册记录：sqlite3 命令行查询输出、.schema 建表语句、DB Browser for SQLite 的 Browsing Data 表格视图、VSCode SQLite Viewer 表格视图均可接受；能看到用户名与密码两列的内容即可，用户名不要求是 alice 和 bob。只有建表语句、没有任何数据行的，不算完成。
+      - lab6_site.png 应能看出浏览器打开了本机或虚拟机上的站点，页面内容为登录注册页或登录成功页之一；Kali 内浏览器截图或 Windows 截图工具截取的 Kali 窗口均可接受。成功页中查询面板的显示与否不单独判不合格，正文区域能看到「登录成功」即可。不要求 IP 与报告完全一致；地址栏中出现 /login、/logout 等路径属正常，不要求停在根路径。
+      - lab6_dns.png 应能看出 mysite.test（或学生自定域名）与 127.0.0.1 的对应关系，hosts 文件内容、ping 输出、浏览器地址栏中的 mysite.test:8000 任意一种出现即可；不要求三者同时出现在同一张图中。
+      - 四张截图应来自学生本人操作，能看到自己跑出来的站点或终端输出；出现手机拍屏反光、摩尔纹、明显倾斜或关键文字无法辨认时判为不合格。普通截图缩放、窗口遮挡、界面语言不同不影响完成。
+      - 截图中出现 123456 之类示例密码或用户名列表均属正常，不因此判不合格；出现公网域名或公网访问地址时按不合格处理。
+  Lab7:
+    enabled: true
+    deadline: "2026-11-14T00:00:00+08:00"
+    grading:
+      mode: legacy
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab7/Lab7.md
+    required_files:
+      - Lab7.md
+      - lab7_basics.c
+      - imgs/lab7_run.png
+      - imgs/lab7_debug.png
+    template_metrics:
+      enabled: true
+      report_file: Lab7.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab7_run.png
+      - imgs/lab7_debug.png
+    review_points:
+      - >-
+        本次只提交 Lab7.md、lab7_basics.c、imgs/lab7_run.png、imgs/lab7_debug.png 四个文件。lab7_basics.c 是必交的本人最终 C 源码；不提交 TEACHING.md、CLion 项目、CMakeLists.txt、构建产物、日志或额外图片。模板行数与字符数量检查只针对 Lab7.md，不应用于 C 源码。
+      - >-
+        Lab7.md 保留模板中的说明、代码示例、表格和图片引用，只替换指定填写位置。第四节包括 4.1 四项基本信息；4.2 本人四行程序输出和三项变量/数组记录；4.3 四项调试记录；4.4 三道简答题。填写位置不能留空或保留占位提示。姓名和 10 位学号须与登记身份一致，模板代码中的示例学号不作为本人填写内容。
+      - >-
+        六项任务为 Hello World 输出、直接输出本人学号、定义并输出 int 变量、定义十个数字组成的学号数组、手写十条固定下标输出语句、CLion 断点与单步调试。输出记录应含问候语、直接输出的学号、整数变量值及数组逐位拼接的学号；两处学号和数组数据应对应本人学号，变量名、整数初始值和输出标签可以不同。不要求将完整学号存入单个 int，也不要求循环。
+      - >-
+        调试记录应说明断点语句、整数初始化完成后的高亮语句和变量值、数组首末元素值以及一条 printf 单步前后的高亮语句；接受简短或口语化说明及合理界面差异，不要求固定行号。不要求自定义函数、Step Into/Out、地址、指针、Watches、Memory View、字节序、Kali、命令行编译、CMake 语法、GDB 或汇编。文本审核不因无法看到截图内容而判缺少图片证据，不要求实际运行学生程序。
+      - >-
+        lab7_basics.c 应为本人实际运行和调试的完整 C 程序，包含 main、Hello World 输出、本人学号文字输出、int 变量及其输出、由本人学号十位数字组成的 int 数组，以及十条依次使用固定下标 0 至 9 的输出语句。不得用循环或直接输出完整学号文字代替逐个数组元素输出；变量名称、整数初始值、标签和合理空格可以不同。源码应与报告及截图对应，不能只提交教师示例数据。学生可在项目中使用 main.c，复制提交时命名为 lab7_basics.c；不要求改变 CLion 构建配置。
+    vision_review_points:
+      - >-
+        lab7_run.png 应能辨认 CLion 中的 C 源码和完整四行程序输出：Hello World、本人学号、一个 int 变量值、数组逐位输出的本人学号。源码区域应能辨认十条 printf 按固定下标 0 至 9 依次读取数组元素，不使用循环，不用直接打印完整学号文字代替数组输出。允许输出标签、空格、变量名及整数初始值不同；两处学号及数组数字应与本人登记学号对应。截图中的源码文件叫 main.c 或 lab7_basics.c 均可；提交文件名须为 lab7_basics.c。
+      - >-
+        lab7_debug.png 应能辨认 CLion 的暂停位置、Variables 中初始化完成后的整数变量值及展开的十个学号数组元素。断点命中或 Step Over 后的暂停均可；不要求固定行号和整数值，不要求地址、指针、内存视图或寄存器。仅有断点标记而无暂停状态，或只有普通运行输出，不算完成调试。
+      - >-
+        两张截图来自本人 Windows CLion 实际操作，内容清晰可辨认即可，不要求固定主题、布局、缩放或界面语言，不使用手机拍屏或网上截图冒充。调试时未换行的数字可能延迟显示，不要求单步后控制台立即出现每一位数字，也不要求调试截图中同时出现完整运行输出。
+  Lab8:
+    enabled: true
+    deadline: "2026-11-21T00:00:00+08:00"
+    grading:
+      mode: legacy
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab8/Lab8.md
+    required_files:
+      - Lab8.md
+      - imgs/lab8_cmake.png
+      - imgs/lab8_asm.png
+      - imgs/lab8_gdb.png
+    template_metrics:
+      enabled: true
+      report_file: Lab8.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab8_cmake.png
+      - imgs/lab8_asm.png
+      - imgs/lab8_gdb.png
+    review_points:
+      - >-
+        本次只提交 Lab8.md 和三张指定截图，共四个文件。教师 mem_basics.c 仅供本地练习，不提交；不要求学生提交 CMakeLists.txt、build/ 目录、可执行文件、.i/.s/.o、压缩包、GDB 日志或其他图片。不得因没有这些文件判为不完整。
+      - >-
+        Lab8.md 保留完整题目、说明、代码示例、表格和图片引用，只填写指定位置。第七节必做报告包括 7.1 七项基本信息；7.2 手工编译记录与 add 反汇编片段；7.3 CMake 构建记录；7.4 五项汇编阅读和两条指令解释；7.5 七项内存与指针观察及两组 x 命令输出；7.6 第 1～8 题知识问答。填写位置不能留空或保留“（填写）”“（粘贴）”等占位提示。
+      - >-
+        6.5 节的 nexti/stepi 指令单步只要求观察一两步，7.6 第 8 题按本人实际回答即可；未使用指令单步时说明“只做了源码单步”仍算完成，不得因没有寄存器截图或独立汇编分析判为不合格。必做主线是手工编译、CMake 构建、add 的少量指令阅读、GDB 断点与内存观察。
+      - >-
+        手工 gcc 与 CMake 两种构建方式均可；CMake 产物位于 build/ 中属正常。反汇编地址、指令编码、是否出现 endbr64、栈偏移和编译器版本不同不构成未完成；允许 objdump 的等价命令、GDB 的 disassemble 或不同顺序的 x 命令。口语化解释、不同地址和截图与报告数值差异不单独判不合格，不要求审核者实际运行学生程序。
+    vision_review_points:
+      - >-
+        lab8_cmake.png 能看出 CMake 配置或构建输出，以及 build/mem_basics 的运行结果即可；配置、构建、运行分两张图也可接受。允许手工 gcc 与 CMake 混排，不要求显示特定 CMake 版本、生成器、目录名或完整六行输出。
+      - >-
+        lab8_asm.png 能看出 add 反汇编中的读取参数、add 或返回指令即可；objdump 与 GDB disassemble 均可，不要求整段函数、特定地址、Intel/AT&T 格式一致或与示例逐字相同。
+      - >-
+        lab8_gdb.png 能看出 GDB 中查看同一数组整数与字节的命令和输出即可，通常为 x/3dw numbers 与 x/12bx numbers；等价地址表达式或能显示整数与字节的 x 命令也可。不要求地址固定、每条输出在一行、x/s word 或寄存器同时出现。
+      - >-
+        三张截图来自本人 Kali 操作，可使用 Windows 截取 VMware 或 Remote-SSH 终端，也可在 Kali 内截图。工具版本、地址、分页方式、主题和窗口布局差异不影响完成；不使用手机拍屏或网上截图冒充。
+  Lab9:
+    enabled: true
+    deadline: "2026-11-28T00:00:00+08:00"
+    grading:
+      mode: legacy
+    min_nonempty_lines: 0
+    allow_extra_files: false
+    report_template: homework/Lab9/Lab9.md
+    required_files:
+      - Lab9.md
+      - answers.txt
+      - wp/wp_phase1.md
+      - wp/wp_phase2.md
+      - imgs/lab9_phase1.png
+      - imgs/lab9_phase2.png
+      - imgs/lab9_success.png
+    template_metrics:
+      enabled: true
+      report_file: Lab9.md
+      characters: ['#', '-', '*', '`', '|', '>']
+      max_file_bytes: 200000
+    vision_files:
+      - imgs/lab9_phase1.png
+      - imgs/lab9_phase2.png
+      - imgs/lab9_success.png
+    review_points:
+      - >-
+        本次只提交 Lab9.md、answers.txt、wp/wp_phase1.md、wp/wp_phase2.md 和三张指定图片，共七个文件。下载包 bomb.tar、原始可执行文件 bomb、bomb.c、README、反汇编临时文件不提交；不得因没有炸弹文件、源码、GDB 日志或后四阶段答案判为不完整。
+      - >-
+        Lab9.md 和两份 WP 保留完整题目、表格、示例及图片引用。报告的必做基本信息、本人最终运行命令与两条成功提示，以及知识问答均完成；两份 WP 的全部指定位置填写，不留“（填写）”“（粘贴）”等占位内容，代码块中要有本人命令或反汇编输出，不能只有固定答案或手册中的解释。
+      - >-
+        Phase 1 WP 包含程序指纹、阶段入口、最终输入、参数设置/字符串比较/返回值分支的反汇编片段、本人 x/s 命令与字符串输出，以及地址和内容、逐字符比较的解释。Phase 2 WP 包含读入返回处与整数内存命令输出、首项/相邻关系/步长/终止条件表、逐项推导表，以及读取转换、lea/mov、x/s/x/dw 和同一行六项输入的解释。实际试验数据可以不是最终答案，不要求故意触发失败，没有错误填写“无”即可。
+      - >-
+        answers.txt 为两行实际输入，第一行字符串，第二行六个空格分隔的十进制整数，不含标签、注释、输出地址或 Markdown 标记；采用 UTF-8 无 BOM、LF 换行，末尾有换行。不要求六阶段输入。文本审核检查存在真实输入和推导，不依据其他版本的固定密码核对内容正确性，不实际运行学生炸弹。
+      - >-
+        本次统一使用官网 Linux/x86-64 自学版，官网说明其评分服务器通知已禁用。不得要求连接评分服务器、注册炸弹、爆炸次数为零、全部六阶段通过、Congratulations 完整成功提示或自然退出码 0；前两阶段成功后仍等待第三行，Ctrl+C/kill 结束属于预期流程。全班使用同一版本，指令地址、字符串和整数答案相同本身不能据此认定抄袭；报告需具备本人观察和解释。
+    vision_review_points:
+      - >-
+        lab9_phase1.png 能看到 phase_1 字符串比较的关键反汇编片段，以及本人 x/s 命令和读到的字符串即可，不要求整段函数、特定地址、固定窗口布局或通过提示同时出现。
+      - >-
+        lab9_phase2.png 能看到整数循环的读取/计算/比较关键片段，以及查看六个整数或相邻两项的命令和输出即可；通常为 x/6dw $rsp 或 x/2dw $rbx-4。试验数据为六个零也接受，不要求截图里的整数一定是最终答案，不要求全部反汇编塞入同一屏。
+      - >-
+        lab9_success.png 必须能看出同一轮运行的两条成功提示 Phase 1 defused. How about the next one? 和 That's number 2. Keep going!；空格差异接受。只到阶段断点、只显示 explode_bomb、只有第一阶段成功或手工 echo 两条提示不算完成。之后等待第三行或被 Ctrl+C 暂停属正常，不要求后四阶段。
+      - >-
+        三张图片来自本人 Kali 调试，可使用 Windows 截取 VMware 或 Remote-SSH 终端，也可在 Kali 内截图。工具版本、地址、分页方式、主题和窗口布局差异不影响完成；不因与教学示例排版不同判不合格，不使用手机拍屏或网上截图冒充。

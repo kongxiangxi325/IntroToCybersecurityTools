@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lab6 小站 - 登录</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="card">
+  <h1>Lab6 小站</h1>
+
+  <h2>登录</h2>
+  <form method="post" action="/login">
+    <label>用户名
+      <input type="text" name="username" autocomplete="off">
+    </label>
+    <label>密码
+      <input type="password" name="password">
+    </label>
+    <button type="submit">登录</button>
+  </form>
+
+  <!--
+    TODO 1：在这里添加注册表单。
+    表单提交到 /register，使用 post 方法。
+    两个输入框的 name 分别是 username 和 password。
+  -->
+</main>
+<script>
+  // TODO 2：在这里写一段 JS：注册表单提交时，把将要发送到后端的用户名和密码用提示框显示出来（写法见讲义 4.5 节）。
+</script>
+</body>
+</html>

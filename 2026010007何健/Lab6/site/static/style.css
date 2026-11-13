@@ -1,0 +1,93 @@
+/* Lab6 小站共用样式：结构、样式分离，改样式只改这里 */
+
+/* 页面主容器：白底、圆角、水平居中、最大宽度限制 */
+.card {
+  max-width: 420px;
+  margin: 48px auto;
+  padding: 24px 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  color: #222;
+}
+
+/* 带背景、边框和内边距的内容区域 */
+.panel {
+  padding: 16px;
+  background: #f7f7f4;
+  border: 1px solid #e2e2dd;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+/* 小号灰色说明文字 */
+.tip {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+}
+
+/* 绿色加粗的成功提示文字 */
+.success {
+  color: #2e7d32;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* 表单与输入框的基础样式 */
+label {
+  display: block;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"] {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 12px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #3b6ea5;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #345f8c;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+h2 {
+  font-size: 17px;
+  margin-top: 24px;
+}
+
+a {
+  color: #3b6ea5;
+  text-decoration: none;
+}
+
+pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  overflow-x: auto;
+}
