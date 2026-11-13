@@ -20,15 +20,22 @@
 | Lab5 | 2026-10-31T00:00:00+08:00 | legacy |
 | Lab6 | 2026-11-07T00:00:00+08:00 | legacy |
 | Lab7 | 2026-11-14T00:00:00+08:00 | legacy |
-| Lab8 | 2026-11-21T00:00:00+08:00 | legacy |
-| Lab9 | 2026-11-28T00:00:00+08:00 | legacy |
 
-## 2. 首个 tiered 作业
+## 2. 从 Lab8 开始启用 tiered
 
-尚未发布。下一次新增 Lab 时在配置里写：
+2026-11-13 起，**Lab8 及之后发布的作业**改用 `tiered`：迟交不再阻止合并，只按迟交时长限制成绩上限，
+并写入 `grades` 分支。Lab1～Lab7 维持 `legacy`，已合并的旧 PR 不追溯改分。
+
+| 作业 | 截止时间 | 模式 |
+|---|---|---|
+| Lab8 | 2026-11-21T00:00:00+08:00 | tiered |
+
+`Lab9` 及之后的作业尚未发布，发布时按下面的写法加入配置，模式仍为 `tiered`。
+
+新增 Lab 时照抄：
 
 ```yaml
-  Lab10:
+  LabN:
     enabled: true
     deadline: "YYYY-MM-DDT00:00:00+08:00"
     grading:
@@ -45,7 +52,8 @@ course-pr-reviewer grade validate --config .github/course-review.yml --students 
 ## 3. 旧 PR 如何处理
 
 - **已合并的历史 PR**：不回填成绩，不补算分段扣分，不修改历史评论。
-- **仍打开的旧 PR**：下一次推送时按新规则审核；内容合格即合并，`legacy` 作业不扣分。
+- **仍打开的 Lab1～Lab7 PR**：下一次推送时按新规则审核；内容合格即合并，`legacy` 作业不扣分。
+- **Lab8 及之后的新 PR**：按 `tiered` 审核并记录迟交分档，不必私聊教师申请放行。
 - **已关闭的旧 PR**：不自动重新打开，学生可重新提交合规 PR。
 - 本迁移没有批量关闭、批量重开或批量修改任何学生 PR。
 
@@ -61,7 +69,7 @@ course-pr-reviewer grade validate --config .github/course-review.yml --students 
 
 1. 把 `.github/workflows/` 里 `LiuXiYing/course-pr-reviewer@...` 改回上一版本 commit；
 2. 从 `.github/course-review.yml` 删除 `grading` 块与 `features.grading`，恢复 `close_late_pr: true`，
-   并删除每个作业的 `grading:` 两行；
+   并删除每个作业的 `grading:` 块；
 3. `grades` 分支保留只读即可，不影响审核；确认不再使用后再删除；
 4. 已写入的 `receipts/` 不要手工修改，保留作为审计记录。
 
