@@ -1,0 +1,64 @@
+{
+  "assignments": {
+    "Lab1": {
+      "deadline": "2026-10-17T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab2": {
+      "deadline": "2026-10-20T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab3": {
+      "deadline": "2026-10-24T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab4": {
+      "deadline": "2026-10-26T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab5": {
+      "deadline": "2026-10-31T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab6": {
+      "deadline": "2026-11-07T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab7": {
+      "deadline": "2026-11-14T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "legacy",
+      "receipts": 0,
+      "scored": 0
+    },
+    "Lab8": {
+      "deadline": "2026-11-21T00:00:00+08:00",
+      "finalized": 0,
+      "mode": "tiered",
+      "receipts": 0,
+      "scored": 0
+    }
+  },
+  "course_id": "intro-to-cybersecurity-tools",
+  "errors": 0,
+  "generated_at": "2026-11-14T23:56:30.408942+00:00",
+  "schema_version": 1
+}
