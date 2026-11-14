@@ -1,0 +1,13 @@
+{
+  "course_id": "intro-to-cybersecurity-tools",
+  "course_name": "学科综合讲座",
+  "created_at": "2026-11-14T23:56:24.818999+00:00",
+  "created_by": "course-pr-reviewer",
+  "notes": [
+    "本分支由课程审核器写入，请勿手工修改 receipts/ 与 claims/。",
+    "reports/ 可以随时由 receipts 重新生成。",
+    "公开仓库中的本分支同样是公开的，不要在此记录姓名、联系方式或申诉材料。"
+  ],
+  "schema_version": 1,
+  "timezone": "Asia/Shanghai"
+}
